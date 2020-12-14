@@ -382,13 +382,29 @@ func process_input(delta):
 		# We want to exclude ourself, and the knife's Area so that does not mess up the results
 		var ray_result = state.intersect_ray(ray_from, ray_to, [self, $Rotation_Helper/Gun_Fire_Points/Knife_Point/Area])
 		if ray_result:
-			print("Collided ", ray_result["position"])
 			var pos = ray_result["position"]
+			var normal = ray_result["normal"].snapped(Vector3(1, 1, 1))
+			# This is a normalized ID for the cubes that occupy this space
+			var cube_coord = (pos / 10).floor()
+			print("Collided ", ray_result["position"], ray_result["normal"], cube_coord)
 			var new_wires = wire_scene.instance()
-			var OFFSET = Vector3(5, 0, 5)
+			var OFFSET = Vector3(5, 5, 5)
 			get_tree().root.add_child(new_wires)
-			var tile_position = (pos - OFFSET).snapped(Vector3(10, 10, 10)) + OFFSET
+			var tile_position = cube_coord * 10 + OFFSET
 			new_wires.translation = tile_position
+			match normal:
+				Vector3.UP: # This is floor, do nothing
+					pass
+				Vector3.DOWN: # Ceiling
+					new_wires.rotate_x(PI)
+				Vector3.LEFT: # This is wall
+					new_wires.rotate_z(PI/2)
+				Vector3.RIGHT:
+					new_wires.rotate_z(-PI/2)
+				Vector3.FORWARD:
+					new_wires.rotate_x(-PI/2)
+				Vector3.BACK:
+					new_wires.rotate_x(PI/2)
 	
 	# ----------------------------------
 	# Capturing the mouse.

@@ -11,7 +11,7 @@ emission_on_uv2 = false
 [node name="Wires" type="Spatial"]
 
 [node name="CSGCombiner" type="CSGCombiner" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4, 0 )
 material_override = SubResource( 1 )
 
 [node name="CSGBox" type="CSGBox" parent="CSGCombiner"]
