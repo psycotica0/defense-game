@@ -104,6 +104,10 @@ const OBJECT_GRAB_DISTANCE = 7
 # The distance of our grabbing raycast
 const OBJECT_GRAB_RAY_DISTANCE = 10
 
+# How far away we can put wires
+const WIRE_RANGE = 40
+var wire_scene = preload("res://Wires.tscn")
+
 # Our globals script.
 # We need this for making sounds, and getting a respawn point
 var globals
@@ -367,6 +371,24 @@ func process_input(delta):
 		else:
 			flashlight.show()
 	# ----------------------------------
+	if Input.is_action_just_pressed("wire"):
+		# Get the direct space state so we can raycast into the world.
+		var state = get_world().direct_space_state
+		# We want to project the ray from the camera, using the center of the screen
+		var center_position = get_viewport().size/2
+		var ray_from = camera.project_ray_origin(center_position)
+		var ray_to = ray_from + camera.project_ray_normal(center_position) * WIRE_RANGE
+		# Send our ray into the space state and see if we got a result.
+		# We want to exclude ourself, and the knife's Area so that does not mess up the results
+		var ray_result = state.intersect_ray(ray_from, ray_to, [self, $Rotation_Helper/Gun_Fire_Points/Knife_Point/Area])
+		if ray_result:
+			print("Collided ", ray_result["position"])
+			var pos = ray_result["position"]
+			var new_wires = wire_scene.instance()
+			var OFFSET = Vector3(5, 0, 5)
+			get_tree().root.add_child(new_wires)
+			var tile_position = (pos - OFFSET).snapped(Vector3(10, 10, 10)) + OFFSET
+			new_wires.translation = tile_position
 	
 	# ----------------------------------
 	# Capturing the mouse.
