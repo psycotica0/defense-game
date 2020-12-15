@@ -106,7 +106,7 @@ const OBJECT_GRAB_RAY_DISTANCE = 10
 
 # How far away we can put wires
 const WIRE_RANGE = 40
-var wire_scene = preload("res://Wires.tscn")
+var level
 
 # Our globals script.
 # We need this for making sounds, and getting a respawn point
@@ -159,6 +159,7 @@ func _ready():
 	# Get the globals autoload script
 	# We have to use get node, because we cannot access autoload scripts using $
 	globals = get_node("/root/Globals")
+	level = get_node("/root/Level")
 	
 	# Start at a random respawn point
 	#global_transform.origin = globals.get_respawn_position()
@@ -387,24 +388,8 @@ func process_input(delta):
 			# This is a normalized ID for the cubes that occupy this space
 			var cube_coord = (pos / 10).floor()
 			print("Collided ", ray_result["position"], ray_result["normal"], cube_coord)
-			var new_wires = wire_scene.instance()
-			var OFFSET = Vector3(5, 5, 5)
-			get_tree().root.add_child(new_wires)
-			var tile_position = cube_coord * 10 + OFFSET
-			new_wires.translation = tile_position
-			match normal:
-				Vector3.UP: # This is floor, do nothing
-					pass
-				Vector3.DOWN: # Ceiling
-					new_wires.rotate_x(PI)
-				Vector3.LEFT: # This is wall
-					new_wires.rotate_z(PI/2)
-				Vector3.RIGHT:
-					new_wires.rotate_z(-PI/2)
-				Vector3.FORWARD:
-					new_wires.rotate_x(-PI/2)
-				Vector3.BACK:
-					new_wires.rotate_x(PI/2)
+			level.addWire(cube_coord, normal)
+
 	
 	# ----------------------------------
 	# Capturing the mouse.
