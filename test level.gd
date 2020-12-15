@@ -12,17 +12,40 @@ func startWire():
 	proposal.clear()
 
 func wireStep(pos, normal):
-	proposal.push_back([pos, normal])
+	var coord = [pos, normal]
+	if proposal.back() != coord:
+		var prev = proposal.back()
+		proposal.push_back([pos, normal])
+		var wire = addWire(pos, normal)
+		wire.startPropose()
+		if prev: # This isn't the first item, so we're making a connection
+			var prevWire = allWires.get(prev)
+			var diff = coord[0] - prev[0]
+			print(coord, prev, diff)
+			match diff:
+				Vector3.RIGHT:
+					wire.proposeNegX()
+					prevWire.proposePosX()
+				Vector3.LEFT:
+					wire.proposePosX()
+					prevWire.proposeNegX()
+				Vector3.BACK:
+					wire.proposeNegZ()
+					prevWire.proposePosZ()
+				Vector3.FORWARD:
+					wire.proposePosZ()
+					prevWire.proposeNegZ()
 
 func finishWire():
-	for p in proposal:
-		addWire(p[0], p[1])
+	#for p in proposal:
+	#	addWire(p[0], p[1])
 	proposal.clear()
 
 func addWire(pos, normal):
 	var existing = allWires.get([pos, normal])
 	if existing:
 		print("Existing")
+		return existing
 	else:
 		print("New one")
 		var new_wires = wire_scene.instance()
@@ -44,6 +67,7 @@ func addWire(pos, normal):
 				new_wires.rotate_x(-PI/2)
 			Vector3.BACK:
 				new_wires.rotate_x(PI/2)
+		return new_wires
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):

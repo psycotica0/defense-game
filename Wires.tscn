@@ -1,27 +1,92 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Wires.gd" type="Script" id=1]
+
+[sub_resource type="SpatialMaterial" id=2]
+flags_transparent = true
+albedo_color = Color( 0, 1, 1, 1 )
+emission_enabled = true
+emission = Color( 0, 1, 1, 1 )
+emission_energy = 5.0
+emission_operator = 0
+emission_on_uv2 = false
 
 [sub_resource type="SpatialMaterial" id=1]
-albedo_color = Color( 0, 0, 1, 1 )
+flags_transparent = true
+albedo_color = Color( 0, 1, 1, 0.0627451 )
 emission_enabled = true
-emission = Color( 0, 0, 1, 1 )
+emission = Color( 0, 1, 1, 1 )
 emission_energy = 5.0
 emission_operator = 0
 emission_on_uv2 = false
 
 [node name="Wires" type="Spatial"]
+script = ExtResource( 1 )
 
-[node name="CSGCombiner" type="CSGCombiner" parent="."]
+[node name="Committed" type="CSGCombiner" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4, 0 )
+material_override = SubResource( 2 )
+
+[node name="PosZ" type="CSGBox" parent="Committed"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 2.5 )
+width = 0.5
+height = 0.1
+depth = 5.0
+
+[node name="NegZ" type="CSGBox" parent="Committed"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -2.5 )
+width = 0.5
+height = 0.1
+depth = 5.0
+
+[node name="PosX" type="CSGBox" parent="Committed"]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 2.5, 0.05, 0 )
+width = 0.5
+height = 0.1
+depth = 5.0
+
+[node name="NegX" type="CSGBox" parent="Committed"]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, -2.5, 0.05, 0 )
+width = 0.5
+height = 0.1
+depth = 5.0
+
+[node name="Hub" type="CSGBox" parent="Committed"]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 0, 0.05, 0 )
+width = 0.5
+height = 0.1
+depth = 0.5
+
+[node name="Proposed" type="CSGCombiner" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4, 0 )
 material_override = SubResource( 1 )
 
-[node name="CSGBox" type="CSGBox" parent="CSGCombiner"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0496689, 0 )
+[node name="PosZ" type="CSGBox" parent="Proposed"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 2.5 )
 width = 0.5
 height = 0.1
-depth = 10.0
+depth = 5.0
 
-[node name="CSGBox2" type="CSGBox" parent="CSGCombiner"]
-transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 0, 0.0496689, 0 )
+[node name="NegZ" type="CSGBox" parent="Proposed"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -2.5 )
 width = 0.5
 height = 0.1
-depth = 10.0
+depth = 5.0
+
+[node name="PosX" type="CSGBox" parent="Proposed"]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 2.50582, 0.0499997, 0.0035677 )
+width = 0.5
+height = 0.1
+depth = 5.0
+
+[node name="NegX" type="CSGBox" parent="Proposed"]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, -2.5, 0.05, 0 )
+width = 0.5
+height = 0.1
+depth = 5.0
+
+[node name="Hub" type="CSGBox" parent="Proposed"]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 0, 0.05, 0 )
+width = 0.5
+height = 0.1
+depth = 0.5

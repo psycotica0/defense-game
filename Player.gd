@@ -396,7 +396,7 @@ func process_input(delta):
 			var normal = ray_result["normal"].snapped(Vector3(1, 1, 1))
 			# This is a normalized ID for the cubes that occupy this space
 			var cube_coord = (pos / 10).floor()
-			print("Collided ", ray_result["position"], ray_result["normal"], cube_coord)
+			# print("Collided ", ray_result["position"], ray_result["normal"], cube_coord)
 			level.wireStep(cube_coord, normal)
 
 	
