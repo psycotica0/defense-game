@@ -107,6 +107,7 @@ const OBJECT_GRAB_RAY_DISTANCE = 10
 # How far away we can put wires
 const WIRE_RANGE = 40
 var level
+var is_wiring = false
 
 # Our globals script.
 # We need this for making sounds, and getting a respawn point
@@ -373,6 +374,14 @@ func process_input(delta):
 			flashlight.show()
 	# ----------------------------------
 	if Input.is_action_just_pressed("wire"):
+		if is_wiring:
+			level.finishWire()
+			is_wiring = false
+		else:
+			level.startWire()
+			is_wiring = true
+
+	if is_wiring:
 		# Get the direct space state so we can raycast into the world.
 		var state = get_world().direct_space_state
 		# We want to project the ray from the camera, using the center of the screen
@@ -388,7 +397,7 @@ func process_input(delta):
 			# This is a normalized ID for the cubes that occupy this space
 			var cube_coord = (pos / 10).floor()
 			print("Collided ", ray_result["position"], ray_result["normal"], cube_coord)
-			level.addWire(cube_coord, normal)
+			level.wireStep(cube_coord, normal)
 
 	
 	# ----------------------------------

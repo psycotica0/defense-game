@@ -3,9 +3,21 @@ extends Spatial
 var wire_scene = preload("res://Wires.tscn")
 
 var allWires = {}
+var proposal = []
  
 func _ready():
 	pass
+
+func startWire():
+	proposal.clear()
+
+func wireStep(pos, normal):
+	proposal.push_back([pos, normal])
+
+func finishWire():
+	for p in proposal:
+		addWire(p[0], p[1])
+	proposal.clear()
 
 func addWire(pos, normal):
 	var existing = allWires.get([pos, normal])
