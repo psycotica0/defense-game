@@ -31,8 +31,8 @@ func setPosition(pos, norm):
 	var tile_position = pos * 10 + OFFSET
 	translation = tile_position
 	match normal:
-		UP: # This is floor, do nothing
-			pass
+		UP: # This is floor. For hacky reasons, for now that means I need to move up
+			translate(Vector3(0, 1, 0))
 		DOWN: # Ceiling
 			rotate_x(PI)
 		LEFT: # This is wall
