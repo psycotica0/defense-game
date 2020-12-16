@@ -100,3 +100,16 @@ func propose(direction, otherNormal):
 					$Proposed/NegZ.visible = true
 				FORWARD:
 					$Proposed/PosZ.visible = true
+
+func commitProposal():
+	$Committed/Hub.visible = $Committed/Hub.visible or $Proposed/Hub.visible
+	$Committed/PosX.visible = $Committed/PosX.visible or $Proposed/PosX.visible
+	$Committed/NegX.visible = $Committed/NegX.visible or $Proposed/NegX.visible
+	$Committed/PosZ.visible = $Committed/PosZ.visible or $Proposed/PosZ.visible
+	$Committed/NegZ.visible = $Committed/NegZ.visible or $Proposed/NegZ.visible
+	
+	$Proposed/Hub.visible = false
+	$Proposed/PosX.visible = false
+	$Proposed/NegX.visible = false
+	$Proposed/PosZ.visible = false
+	$Proposed/NegZ.visible = false

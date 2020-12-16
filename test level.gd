@@ -26,8 +26,8 @@ func wireStep(pos, normal):
 			prevWire.propose(-diff, wire.normal)
 
 func finishWire():
-	#for p in proposal:
-	#	addWire(p[0], p[1])
+	for p in proposal:
+		allWires.get(p).commitProposal()
 	proposal.clear()
 
 func addWire(pos, normal):
