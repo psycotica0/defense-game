@@ -51,6 +51,13 @@ func propose(direction, otherNormal):
 	if direction == Vector3.ZERO:
 		# If we're not going anywhere, then we should instead move towards the other tile's normal
 		direction = otherNormal
+	
+	# Since these are integer values, the only way to get 2 is if it's 1 in two places.
+	# 2 in one place will get me 4, because it's squared, and we don't have imaginary values
+	# So I think we're ok here.
+	# So if I've moved between two places that differ by 1 in two axis, then I think that's an outside corner
+	if direction.length_squared() == 2.0:
+		direction = -otherNormal
 		
 	match direction:
 		RIGHT:
