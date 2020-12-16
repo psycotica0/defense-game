@@ -22,19 +22,8 @@ func wireStep(pos, normal):
 			var prevWire = allWires.get(prev)
 			var diff = coord[0] - prev[0]
 			print(coord, prev, diff)
-			match diff:
-				Vector3.RIGHT:
-					wire.proposeNegX()
-					prevWire.proposePosX()
-				Vector3.LEFT:
-					wire.proposePosX()
-					prevWire.proposeNegX()
-				Vector3.BACK:
-					wire.proposeNegZ()
-					prevWire.proposePosZ()
-				Vector3.FORWARD:
-					wire.proposePosZ()
-					prevWire.proposeNegZ()
+			wire.propose(diff)
+			prevWire.propose(-diff)
 
 func finishWire():
 	#for p in proposal:
@@ -50,23 +39,8 @@ func addWire(pos, normal):
 		print("New one")
 		var new_wires = wire_scene.instance()
 		allWires[[pos, normal]] = new_wires
-		var OFFSET = Vector3(5, 5, 5)
 		get_tree().root.add_child(new_wires)
-		var tile_position = pos * 10 + OFFSET
-		new_wires.translation = tile_position
-		match normal:
-			Vector3.UP: # This is floor, do nothing
-				pass
-			Vector3.DOWN: # Ceiling
-				new_wires.rotate_x(PI)
-			Vector3.LEFT: # This is wall
-				new_wires.rotate_z(PI/2)
-			Vector3.RIGHT:
-				new_wires.rotate_z(-PI/2)
-			Vector3.FORWARD:
-				new_wires.rotate_x(-PI/2)
-			Vector3.BACK:
-				new_wires.rotate_x(PI/2)
+		new_wires.setPosition(pos, normal)
 		return new_wires
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
