@@ -22,8 +22,8 @@ func wireStep(pos, normal):
 			var prevWire = allWires.get(prev)
 			var diff = coord[0] - prev[0]
 			print(coord, prev, diff)
-			wire.propose(diff)
-			prevWire.propose(-diff)
+			wire.propose(diff, prevWire.normal)
+			prevWire.propose(-diff, wire.normal)
 
 func finishWire():
 	#for p in proposal:

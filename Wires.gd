@@ -47,7 +47,11 @@ func setPosition(pos, norm):
 func startPropose():
 	$Proposed/Hub.visible = true
 
-func propose(direction):
+func propose(direction, otherNormal):
+	if direction == Vector3.ZERO:
+		# If we're not going anywhere, then we should instead move towards the other tile's normal
+		direction = otherNormal
+		
 	match direction:
 		RIGHT:
 			match normal:
