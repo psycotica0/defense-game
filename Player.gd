@@ -394,10 +394,30 @@ func process_input(delta):
 		if ray_result:
 			var pos = ray_result["position"]
 			var normal = ray_result["normal"].snapped(Vector3(1, 1, 1))
-			# This is a normalized ID for the cubes that occupy this space
-			var cube_coord = (pos / 10).floor()
-			# print("Collided ", ray_result["position"], ray_result["normal"], cube_coord)
-			level.wireStep(cube_coord, normal)
+			var mod = pos.posmod(10)
+			var minDiff = 0
+			var maxDiff = 10
+			
+			match normal:
+				Vector3.UP, Vector3.DOWN:
+					minDiff = min(mod.x, mod.z)
+					maxDiff = max(mod.x, mod.z)
+				Vector3.LEFT, Vector3.RIGHT:
+					minDiff = min(mod.y, mod.z)
+					maxDiff = max(mod.y, mod.z)
+				Vector3.FORWARD, Vector3.BACK:
+					minDiff = min(mod.x, mod.y)
+					maxDiff = max(mod.x, mod.y)
+			
+			if minDiff > 0.5 and maxDiff < 9.5:
+				# Sometimes things like normals can get weird at the edges
+				# So put a 0.5 deadzone around things.
+				# Besides, who's going to point at the very edge of a tile and be mad it didn't get picked up?
+				
+				# This is a normalized ID for the cubes that occupy this space
+				var cube_coord = (pos / 10).floor()
+				# print("Collided ", ray_result["position"], ray_result["normal"], cube_coord)
+				level.wireStep(cube_coord, normal)
 
 	
 	# ----------------------------------
