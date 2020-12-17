@@ -6,6 +6,7 @@ var circuitManager
 var circuit
 
 var proposedConnections = []
+var proposedDeletions = []
 var connections = []
 
 const OFFSET = Vector3(5, 5, 5)
@@ -17,18 +18,18 @@ const LEFT = Vector3.LEFT
 const FORWARD = Vector3.FORWARD
 const BACK = Vector3.BACK
 
+enum LegState {NOTHING, PROPOSED, COMMITTED}
+var legs = {
+	"posZ": LegState.NOTHING,
+	"negZ": LegState.NOTHING,
+	"posX": LegState.NOTHING,
+	"negX": LegState.NOTHING,
+}
+
 func _ready():
 	$Committed/Hub.visible = false
-	$Committed/PosZ.visible = false
-	$Committed/NegZ.visible = false
-	$Committed/PosX.visible = false
-	$Committed/NegX.visible = false
-	
 	$Proposed/Hub.visible = false
-	$Proposed/PosZ.visible = false
-	$Proposed/NegZ.visible = false
-	$Proposed/PosX.visible = false
-	$Proposed/NegX.visible = false
+	setLegVisibility()
 
 func setPosition(pos, norm):
 	position = pos
@@ -52,59 +53,60 @@ func setPosition(pos, norm):
 func startPropose():
 	$Proposed/Hub.visible = true
 
-func propose(direction, otherNormal):
+func getDirection(otherWire):
+	var direction = position - otherWire.position
 	if direction == Vector3.ZERO:
 		# If we're not going anywhere, then we should instead move towards the other tile's normal
-		direction = otherNormal
+		direction = otherWire.normal
 	
 	# Since these are integer values, the only way to get 2 is if it's 1 in two places.
 	# 2 in one place will get me 4, because it's squared, and we don't have imaginary values
 	# So I think we're ok here.
 	# So if I've moved between two places that differ by 1 in two axis, then I think that's an outside corner
 	if direction.length_squared() == 2.0:
-		direction = -otherNormal
+		direction = -otherWire.normal
 		
 	match direction:
 		RIGHT:
 			match normal:
 				UP, DOWN, BACK, FORWARD:
-					$Proposed/NegX.visible = true
+					return "negX"
 		LEFT:
 			match normal:
 				UP, DOWN, BACK, FORWARD:
-					$Proposed/PosX.visible = true
+					return "posX"
 		FORWARD:
 			match normal:
 				UP, LEFT, RIGHT:
-					$Proposed/PosZ.visible = true
+					return "posZ"
 				DOWN:
-					$Proposed/NegZ.visible = true
+					return "negZ"
 		BACK:
 			match normal:
 				UP, LEFT, RIGHT:
-					$Proposed/NegZ.visible = true
+					return "negZ"
 				DOWN:
-					$Proposed/PosZ.visible = true
+					return "posZ"
 		UP:
 			match normal:
 				RIGHT:
-					$Proposed/PosX.visible = true
+					return "posX"
 				LEFT:
-					$Proposed/NegX.visible = true
+					return "negX"
 				BACK:
-					$Proposed/PosZ.visible = true
+					return "posZ"
 				FORWARD:
-					$Proposed/NegZ.visible = true
+					return "negZ"
 		DOWN:
 			match normal:
 				RIGHT:
-					$Proposed/NegX.visible = true
+					return "negX"
 				LEFT:
-					$Proposed/PosX.visible = true
+					return "posX"
 				BACK:
-					$Proposed/NegZ.visible = true
+					return "negZ"
 				FORWARD:
-					$Proposed/PosZ.visible = true
+					return "posZ"
 
 func proposeConnection(otherWire):
 	self.connectionProposed(otherWire)
@@ -114,9 +116,26 @@ func proposeConnection(otherWire):
 # The outside tells one of use to connect to the other
 # Whereas this is the two halves talking to each other as part of that
 func connectionProposed(otherWire):
-	var diff = position - otherWire.position
-	propose(diff, otherWire.normal)
-	proposedConnections.push_back(otherWire)
+	var leg = getDirection(otherWire)
+	
+	var cnxIndex = connections.find(otherWire)
+	var prpIndex = proposedConnections.find(otherWire)
+	var delIndex = proposedDeletions.find(otherWire)
+	
+	if delIndex != -1: # Undo Delete
+		proposedDeletions.remove(delIndex)
+		legs[leg] = LegState.COMMITTED
+	elif cnxIndex != -1: # Delete
+		proposedDeletions.push_back(otherWire)
+		legs[leg] = LegState.PROPOSED
+	elif prpIndex != -1: # Undo Add
+		proposedConnections.remove(prpIndex)
+		legs[leg] = LegState.NOTHING
+	else: # Add
+		proposedConnections.push_back(otherWire)
+		legs[leg] = LegState.PROPOSED
+	
+	setLegVisibility()
 
 func changeCircuit(newCircuit):
 	circuit = newCircuit
@@ -136,21 +155,24 @@ func changeCircuit(newCircuit):
 		3:
 			$Cylinder.visible = true
 
-func commitProposal():
-	$Committed/Hub.visible = $Committed/Hub.visible or $Proposed/Hub.visible
-	$Committed/PosX.visible = $Committed/PosX.visible or $Proposed/PosX.visible
-	$Committed/NegX.visible = $Committed/NegX.visible or $Proposed/NegX.visible
-	$Committed/PosZ.visible = $Committed/PosZ.visible or $Proposed/PosZ.visible
-	$Committed/NegZ.visible = $Committed/NegZ.visible or $Proposed/NegZ.visible
+func setLegVisibility():
+	$Committed/PosX.visible = legs.posX == LegState.COMMITTED
+	$Committed/NegX.visible = legs.negX == LegState.COMMITTED
+	$Committed/PosZ.visible = legs.posZ == LegState.COMMITTED
+	$Committed/NegZ.visible = legs.negZ == LegState.COMMITTED
 	
+	$Proposed/PosX.visible = legs.posX == LegState.PROPOSED
+	$Proposed/NegX.visible = legs.negX == LegState.PROPOSED
+	$Proposed/PosZ.visible = legs.posZ == LegState.PROPOSED
+	$Proposed/NegZ.visible = legs.negZ == LegState.PROPOSED
+
+func commitProposal():
+	$Committed/Hub.visible = true
 	$Proposed/Hub.visible = false
-	$Proposed/PosX.visible = false
-	$Proposed/NegX.visible = false
-	$Proposed/PosZ.visible = false
-	$Proposed/NegZ.visible = false
 	
 	for p in proposedConnections:
 		if not connections.has(p):
+			legs[getDirection(p)] = LegState.COMMITTED
 			connections.push_back(p)
 			if p.circuit and p.circuit != circuit:
 				# Our neightbour is a member of a circuit we are not
@@ -167,3 +189,19 @@ func commitProposal():
 		# If at the end of the above loop, I didn't end up in any circuits, just add a new one for myself
 		# It may end up getting merged right after my neighbour runs, but that's fine
 		changeCircuit(circuitManager.newCircuit())
+	
+	# Now deletions, perhaps undoing all the work we just did
+	for p in proposedDeletions:
+		connections.erase(p)
+		legs[getDirection(p)] = LegState.NOTHING
+	
+	var hadDeletions = not proposedDeletions.empty()
+	proposedDeletions.clear()
+	
+	setLegVisibility()
+	
+	if hadDeletions:
+		return circuit
+	else:
+		return null
+	

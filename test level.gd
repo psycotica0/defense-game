@@ -26,9 +26,18 @@ func wireStep(pos, normal):
 			wire.proposeConnection(prevWire)
 
 func finishWire():
+	var circuitsToSplit = []
+	
 	for p in proposal:
-		allWires.get(p).commitProposal()
+		var circuit = allWires.get(p).commitProposal()
+		if circuit:
+			if not circuitsToSplit.has(circuit):
+				circuitsToSplit.push_back(circuit)
+	
 	proposal.clear()
+	
+	if not circuitsToSplit.empty():
+		prints("Splitting", circuitsToSplit)
 
 func addWire(pos, normal):
 	var existing = allWires.get([pos, normal])
