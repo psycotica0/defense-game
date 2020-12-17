@@ -2,6 +2,11 @@ extends Spatial
 
 var position
 var normal
+var circuitManager
+var circuit
+
+var proposedConnections = []
+var connections = []
 
 const OFFSET = Vector3(5, 5, 5)
 
@@ -101,6 +106,36 @@ func propose(direction, otherNormal):
 				FORWARD:
 					$Proposed/PosZ.visible = true
 
+func proposeConnection(otherWire):
+	self.connectionProposed(otherWire)
+	otherWire.connectionProposed(self)
+
+# This is the other half of proposeConnection
+# The outside tells one of use to connect to the other
+# Whereas this is the two halves talking to each other as part of that
+func connectionProposed(otherWire):
+	var diff = position - otherWire.position
+	propose(diff, otherWire.normal)
+	proposedConnections.push_back(otherWire)
+
+func changeCircuit(newCircuit):
+	circuit = newCircuit
+	circuit.join(self)
+	$Cube.visible = false
+	$Prism.visible = false
+	$Sphere.visible = false
+	$Cylinder.visible = false
+	
+	match posmod(circuit.identifier, 4):
+		0:
+			$Cube.visible = true
+		1:
+			$Prism.visible = true
+		2:
+			$Sphere.visible = true
+		3:
+			$Cylinder.visible = true
+
 func commitProposal():
 	$Committed/Hub.visible = $Committed/Hub.visible or $Proposed/Hub.visible
 	$Committed/PosX.visible = $Committed/PosX.visible or $Proposed/PosX.visible
@@ -113,3 +148,22 @@ func commitProposal():
 	$Proposed/NegX.visible = false
 	$Proposed/PosZ.visible = false
 	$Proposed/NegZ.visible = false
+	
+	for p in proposedConnections:
+		if not connections.has(p):
+			connections.push_back(p)
+			if p.circuit and p.circuit != circuit:
+				# Our neightbour is a member of a circuit we are not
+				if circuit:
+					# We're already in a circuit, so this is a merge
+					circuitManager.merge(circuit, p.circuit)
+				else:
+					# We aren't in a circuit, so just join theirs
+					changeCircuit(p.circuit)
+	
+	proposedConnections.clear()
+	
+	if not circuit:
+		# If at the end of the above loop, I didn't end up in any circuits, just add a new one for myself
+		# It may end up getting merged right after my neighbour runs, but that's fine
+		changeCircuit(circuitManager.newCircuit())
