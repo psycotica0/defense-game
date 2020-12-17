@@ -36,8 +36,28 @@ func finishWire():
 	
 	proposal.clear()
 	
-	if not circuitsToSplit.empty():
-		prints("Splitting", circuitsToSplit)
+	for c in circuitsToSplit:
+		# I think I could have one wire return a split
+		# but then another one later could have merged
+		# So make sure this thing actually exists
+		if circuits.has(c.identifier):
+			# Then clear out all the existing ones
+			for m in c.members:
+				m.circuit = null
+			
+			# I don't love that I'm doing two passes, but to do it in one I'd
+			# need to store some kind of generation so I can tell
+			# "I've been reset by this pass" from "I'm still set from before"
+			# I think this will be cleaner, until it's a problem
+			
+			for m in c.members:
+				if not m.circuit:
+					# This hasn't been set by a previous flood, so it must
+					# be unconnected to anything we've seen so far
+					m.floodCircuit(newCircuit())
+			
+			# Now remove the old one, all its children are reassigned
+			circuits.erase(c.identifier)
 
 func addWire(pos, normal):
 	var existing = allWires.get([pos, normal])

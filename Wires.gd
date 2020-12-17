@@ -155,6 +155,14 @@ func changeCircuit(newCircuit):
 		3:
 			$Cylinder.visible = true
 
+# This one recurses through neighbours to spread our new circuit
+# It's used when there's a split to find the currently connected set
+func floodCircuit(newCircuit):
+	if circuit != newCircuit:
+		changeCircuit(newCircuit)
+		for c in connections:
+			c.floodCircuit(newCircuit)
+
 func setLegVisibility():
 	$Committed/PosX.visible = legs.posX == LegState.COMMITTED
 	$Committed/NegX.visible = legs.negX == LegState.COMMITTED
