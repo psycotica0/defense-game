@@ -58,6 +58,18 @@ func finishWire():
 			
 			# Now remove the old one, all its children are reassigned
 			circuits.erase(c.identifier)
+		
+	# Now cleanup circuits with only one item (since it doesn't connect anything)
+	var keys = circuits.keys()
+	# I fetched the keys explictly first, because I was afraid some issue modifying while iterating
+	for c in keys:
+		var circuit = circuits[c]
+		if circuit.members.size() <= 1:
+			for m in circuit.members:
+				allWires.erase([m.position, m.normal])
+				m.queue_free()
+			circuits.erase(c)
+			circuit.queue_free()
 
 func addWire(pos, normal):
 	var existing = allWires.get([pos, normal])
