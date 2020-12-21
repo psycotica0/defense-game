@@ -418,6 +418,45 @@ func process_input(delta):
 				var cube_coord = (pos / 10).floor()
 				# print("Collided ", ray_result["position"], ray_result["normal"], cube_coord)
 				level.wireStep(cube_coord, normal)
+	
+	# I just cut and paste this from above
+	if Input.is_action_just_pressed("lamp"):
+		# Get the direct space state so we can raycast into the world.
+		var state = get_world().direct_space_state
+		# We want to project the ray from the camera, using the center of the screen
+		var center_position = get_viewport().size/2
+		var ray_from = camera.project_ray_origin(center_position)
+		var ray_to = ray_from + camera.project_ray_normal(center_position) * WIRE_RANGE
+		# Send our ray into the space state and see if we got a result.
+		# We want to exclude ourself, and the knife's Area so that does not mess up the results
+		var ray_result = state.intersect_ray(ray_from, ray_to, [self, $Rotation_Helper/Gun_Fire_Points/Knife_Point/Area])
+		if ray_result:
+			var pos = ray_result["position"]
+			var normal = ray_result["normal"].snapped(Vector3(1, 1, 1))
+			var mod = pos.posmod(10)
+			var minDiff = 0
+			var maxDiff = 10
+			
+			match normal:
+				Vector3.UP, Vector3.DOWN:
+					minDiff = min(mod.x, mod.z)
+					maxDiff = max(mod.x, mod.z)
+				Vector3.LEFT, Vector3.RIGHT:
+					minDiff = min(mod.y, mod.z)
+					maxDiff = max(mod.y, mod.z)
+				Vector3.FORWARD, Vector3.BACK:
+					minDiff = min(mod.x, mod.y)
+					maxDiff = max(mod.x, mod.y)
+			
+			if minDiff > 0.5 and maxDiff < 9.5:
+				# Sometimes things like normals can get weird at the edges
+				# So put a 0.5 deadzone around things.
+				# Besides, who's going to point at the very edge of a tile and be mad it didn't get picked up?
+				
+				# This is a normalized ID for the cubes that occupy this space
+				var cube_coord = (pos / 10).floor()
+				# print("Collided ", ray_result["position"], ray_result["normal"], cube_coord)
+				level.lamp(cube_coord, normal)
 
 	
 	# ----------------------------------

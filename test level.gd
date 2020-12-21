@@ -1,6 +1,7 @@
 extends Spatial
 
 var wire_scene = preload("res://Wires.tscn")
+var lamp_scene = preload("res://Lamp.tscn")
 var circuits = {}
 var maxCircuit = 1
 
@@ -70,6 +71,12 @@ func finishWire():
 				m.queue_free()
 			circuits.erase(c)
 			circuit.queue_free()
+
+func lamp(pos, normal):
+	var new_lamp = lamp_scene.instance()
+	new_lamp.circuitManager = self
+	get_tree().root.add_child(new_lamp)
+	new_lamp.setPosition(pos, normal)
 
 func addWire(pos, normal):
 	var existing = allWires.get([pos, normal])
