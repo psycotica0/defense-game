@@ -8,6 +8,7 @@ var circuit
 var proposedConnections = []
 var proposedDeletions = []
 var connections = []
+var dependent
 
 const OFFSET = Vector3(5, 5, 5)
 
@@ -140,6 +141,9 @@ func connectionProposed(otherWire):
 func changeCircuit(newCircuit):
 	circuit = newCircuit
 	circuit.join(self)
+	if dependent:
+		dependent.changeCircuit(circuit)
+	
 	$Cube.visible = false
 	$Prism.visible = false
 	$Sphere.visible = false
@@ -173,6 +177,11 @@ func setLegVisibility():
 	$Proposed/NegX.visible = legs.negX == LegState.PROPOSED
 	$Proposed/PosZ.visible = legs.posZ == LegState.PROPOSED
 	$Proposed/NegZ.visible = legs.negZ == LegState.PROPOSED
+
+func setDependent(dep):
+	dependent = dep
+	if circuit:
+		dependent.changeCircuit(circuit)
 
 func commitProposal():
 	$Committed/Hub.visible = true

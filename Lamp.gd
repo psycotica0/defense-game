@@ -7,6 +7,7 @@ var position
 var normal
 var circuitManager
 var circuit
+var source
 
 const OFFSET = Vector3(5, 5, 5)
 
@@ -41,11 +42,20 @@ func setPosition(pos, norm):
 
 func _on_Area_area_entered(area):
 	prints("Entered Lamp!", area, area.get_parent())
-	activate()
+	source = area.get_parent()
+	source.setDependent(self)
 
 func _on_Area_area_exited(area):
 	prints("Exit Lamp!", area, area.get_parent())
-	deactivate()
+	source = null
+	changeCircuit(null)
+
+func changeCircuit(newCircuit):
+	circuit = newCircuit
+	if circuit:
+		activate()
+	else:
+		deactivate()
 
 func activate():
 	activeLight.visible = true
