@@ -18,6 +18,8 @@ const LEFT = Vector3.LEFT
 const FORWARD = Vector3.FORWARD
 const BACK = Vector3.BACK
 
+const demand = 10
+
 func _ready():
 	deactivate()
 
@@ -51,11 +53,16 @@ func _on_Area_area_exited(area):
 	changeCircuit(null)
 
 func changeCircuit(newCircuit):
+	var oldCircuit = circuit
 	circuit = newCircuit
 	if circuit:
-		activate()
+		circuit.connect("power_updated", self, "circuitPowerChanged")
+		circuit.addSink(self)
 	else:
 		deactivate()
+		if oldCircuit:
+			oldCircuit.disconnect("power_updated", self, "circuitPowerChanged")
+			oldCircuit.removeSink(self)
 
 func activate():
 	activeLight.visible = true
@@ -64,3 +71,11 @@ func activate():
 func deactivate():
 	activeLight.visible = false
 	inactiveLight.visible = true
+
+func circuitPowerChanged(s_circuit, power):
+	# I don't know how async signals are, so I'll make sure nothing changed here
+	if circuit == s_circuit:
+		if power > 0:
+			activate()
+		else:
+			deactivate()

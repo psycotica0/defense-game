@@ -2,6 +2,7 @@ extends Spatial
 
 var circuit
 var source
+const capacity = 100
 
 func _ready():
 	pass
@@ -17,14 +18,15 @@ func _on_Area_area_exited(area):
 	changeCircuit(null)
 
 func changeCircuit(newCircuit):
+	var oldCircuit = circuit
 	circuit = newCircuit
 	if circuit:
 		activate()
 	else:
-		deactivate()
+		deactivate(oldCircuit)
 
 func activate():
-	pass
+	circuit.addSource(self)
 
-func deactivate():
-	pass
+func deactivate(oldCircuit):
+	oldCircuit.removeSource(self)
