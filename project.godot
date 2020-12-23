@@ -13,9 +13,15 @@ _global_script_classes=[ {
 "class": "Circuit",
 "language": "GDScript",
 "path": "res://circuit.gd"
+}, {
+"base": "Spatial",
+"class": "Generator",
+"language": "GDScript",
+"path": "res://Generator.gd"
 } ]
 _global_script_class_icons={
-"Circuit": ""
+"Circuit": "",
+"Generator": ""
 }
 
 [application]

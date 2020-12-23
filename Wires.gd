@@ -189,6 +189,9 @@ func setLegVisibility():
 
 func setDependent(klass):
 	if dependent:
+		if dependent is Generator:
+			# Don't allow people to change generators into other stuff
+			return
 		dependent.changeCircuit(null)
 		dependent.queue_free()
 	
@@ -262,3 +265,6 @@ func toggleSwitch():
 		# We've just opened a closed switch, so split our circuit
 		circuitManager.splitCircuits([circuit])
 
+func is_trivial():
+	# I have nothing on me, and I'm not connected to anyone else
+	return dependent == null and connections.size() == 0

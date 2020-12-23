@@ -63,5 +63,5 @@ func is_trivial():
 	# structure we'd like to preserve
 	return members.size() == 0 or (
 		members.size() == 1 and
-		members[0].connections.size() == 0
+		members[0].is_trivial()
 	)

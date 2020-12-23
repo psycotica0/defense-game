@@ -1,5 +1,7 @@
 extends Spatial
 
+class_name Generator
+
 var circuit
 var source
 const capacity = 100
