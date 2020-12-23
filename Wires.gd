@@ -204,7 +204,7 @@ func commitProposal():
 		if not connections.has(p):
 			legs[getDirection(p)] = LegState.COMMITTED
 			connections.push_back(p)
-			if p.circuit and p.circuit != circuit:
+			if p.circuit and p.circuit != circuit and switchState != SwitchState.OPEN and p.switchState != SwitchState.OPEN:
 				# Our neightbour is a member of a circuit we are not
 				if circuit:
 					# We're already in a circuit, so this is a merge
