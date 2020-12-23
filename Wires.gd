@@ -10,6 +10,9 @@ var proposedDeletions = []
 var connections = []
 var dependent
 
+enum SwitchState {NONE, OPEN, CLOSED}
+var switchState = SwitchState.NONE
+
 const OFFSET = Vector3(5, 5, 5)
 
 const UP = Vector3.UP
@@ -30,6 +33,7 @@ var legs = {
 func _ready():
 	$Committed/Hub.visible = false
 	$Proposed/Hub.visible = false
+	renderSwitchState()
 	setLegVisibility()
 
 func setPosition(pos, norm):
@@ -161,11 +165,16 @@ func changeCircuit(newCircuit):
 
 # This one recurses through neighbours to spread our new circuit
 # It's used when there's a split to find the currently connected set
-func floodCircuit(newCircuit):
-	if circuit != newCircuit:
-		changeCircuit(newCircuit)
-		for c in connections:
-			c.floodCircuit(newCircuit)
+func floodCircuit(newCircuit, fromTop = false):
+	match switchState:
+		SwitchState.NONE, SwitchState.CLOSED:
+			if circuit != newCircuit:
+				changeCircuit(newCircuit)
+				for c in connections:
+					c.floodCircuit(newCircuit)
+		SwitchState.OPEN:
+			if fromTop and circuit != newCircuit:
+				changeCircuit(newCircuit)
 
 func setLegVisibility():
 	$Committed/PosX.visible = legs.posX == LegState.COMMITTED
@@ -182,6 +191,10 @@ func setDependent(dep):
 	dependent = dep
 	if circuit:
 		dependent.changeCircuit(circuit)
+
+func renderSwitchState():
+	$OpenSwitch.visible = switchState == SwitchState.OPEN
+	$ClosedSwitch.visible = switchState == SwitchState.CLOSED
 
 func commitProposal():
 	$Committed/Hub.visible = true
@@ -221,4 +234,21 @@ func commitProposal():
 		return circuit
 	else:
 		return null
+
+func toggleSwitch():
+	match switchState:
+		SwitchState.NONE, SwitchState.CLOSED:
+			switchState = SwitchState.OPEN
+		SwitchState.OPEN:
+			switchState = SwitchState.CLOSED
 	
+	renderSwitchState()
+	
+	if switchState == SwitchState.CLOSED:
+		# We've just closed the switch, so check if we've connected stuff
+		for c in connections:
+			if c.circuit != circuit:
+				circuitManager.merge(circuit, c.circuit)
+	else:
+		# We've just opened a closed switch, so split our circuit
+		circuitManager.splitCircuits([circuit])

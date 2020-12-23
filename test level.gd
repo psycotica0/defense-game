@@ -36,7 +36,9 @@ func finishWire():
 				circuitsToSplit.push_back(circuit)
 	
 	proposal.clear()
-	
+	splitCircuits(circuitsToSplit)
+
+func splitCircuits(circuitsToSplit):
 	for c in circuitsToSplit:
 		# I think I could have one wire return a split
 		# but then another one later could have merged
@@ -55,7 +57,7 @@ func finishWire():
 				if not m.circuit:
 					# This hasn't been set by a previous flood, so it must
 					# be unconnected to anything we've seen so far
-					m.floodCircuit(newCircuit())
+					m.floodCircuit(newCircuit(), true)
 			
 			# Now remove the old one, all its children are reassigned
 			circuits.erase(c.identifier)
@@ -65,7 +67,7 @@ func finishWire():
 	# I fetched the keys explictly first, because I was afraid some issue modifying while iterating
 	for c in keys:
 		var circuit = circuits[c]
-		if circuit.members.size() <= 1:
+		if circuit.is_trivial():
 			for m in circuit.members:
 				allWires.erase([m.position, m.normal])
 				m.queue_free()
@@ -77,6 +79,12 @@ func lamp(pos, normal):
 	new_lamp.circuitManager = self
 	get_tree().root.add_child(new_lamp)
 	new_lamp.setPosition(pos, normal)
+
+func toggle_switch(pos, normal):
+	var wire = allWires.get([pos, normal])
+	# If there's nothing here, do nothing
+	if wire:
+		wire.toggleSwitch()
 
 func addWire(pos, normal):
 	var existing = allWires.get([pos, normal])

@@ -55,3 +55,13 @@ func updateDemand():
 func updatePower():
 	power = capacity - demand
 	emit_signal("power_updated", self, power)
+
+# This tells us if this circuit should be deleted
+func is_trivial():
+	# The extra complexity is to account for the fact a circuit next to an open
+	# switch is technically in its own circuit, but it does actually have
+	# structure we'd like to preserve
+	return members.size() == 0 or (
+		members.size() == 1 and
+		members[0].connections.size() == 0
+	)
