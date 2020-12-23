@@ -5,17 +5,12 @@ var source
 const capacity = 100
 
 func _ready():
-	pass
-
-func _on_Area_area_entered(area):
-	prints("Entered Generator!", area, area.get_parent())
-	source = area.get_parent()
-	source.setDependent(self)
-
-func _on_Area_area_exited(area):
-	prints("Exit Generator!", area, area.get_parent())
-	source = null
-	changeCircuit(null)
+	# I want to be able to place these in the editor
+	# But in reality it needs to be a dependent of a wire
+	# That nees to live in a global array
+	# So instead we've got this bootstrap which kills us and makes a real one
+	if get_parent().has_method("initializeGenerator"):
+		get_parent().call_deferred("initializeGenerator", self)
 
 func changeCircuit(newCircuit):
 	var oldCircuit = circuit

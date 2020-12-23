@@ -187,8 +187,17 @@ func setLegVisibility():
 	$Proposed/PosZ.visible = legs.posZ == LegState.PROPOSED
 	$Proposed/NegZ.visible = legs.negZ == LegState.PROPOSED
 
-func setDependent(dep):
-	dependent = dep
+func setDependent(klass):
+	if dependent:
+		dependent.changeCircuit(null)
+		dependent.queue_free()
+	
+	dependent = klass.instance()
+	
+	add_child(dependent)
+	dependent.transform = $MountPoint.transform
+	
+	dependent.source = self
 	if circuit:
 		dependent.changeCircuit(circuit)
 
@@ -252,3 +261,4 @@ func toggleSwitch():
 	else:
 		# We've just opened a closed switch, so split our circuit
 		circuitManager.splitCircuits([circuit])
+

@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://Wires.gd" type="Script" id=1]
 
@@ -43,8 +43,6 @@ albedo_color = Color( 1, 0, 1, 1 )
 
 [sub_resource type="SphereMesh" id=10]
 material = SubResource( 9 )
-
-[sub_resource type="BoxShape" id=11]
 
 [sub_resource type="SpatialMaterial" id=12]
 albedo_color = Color( 1, 0, 0, 1 )
@@ -163,15 +161,6 @@ visible = false
 mesh = SubResource( 10 )
 material/0 = null
 
-[node name="Area" type="Area" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.73804, 0 )
-monitoring = false
-collision_layer = 2
-collision_mask = 0
-
-[node name="CollisionShape" type="CollisionShape" parent="Area"]
-shape = SubResource( 11 )
-
 [node name="OpenSwitch" type="MeshInstance" parent="."]
 transform = Transform( 0.397275, 0, 0, 0, 0.111837, 0, 0, 0, 0.397275, 0, -4.89701, 0 )
 mesh = SubResource( 13 )
@@ -181,3 +170,6 @@ material/0 = null
 transform = Transform( 0.397275, 0, 0, 0, 0.111837, 0, 0, 0, 0.397275, 0, -4.89701, 0 )
 mesh = SubResource( 15 )
 material/0 = null
+
+[node name="MountPoint" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.96217, 0 )

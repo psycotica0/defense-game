@@ -2,6 +2,7 @@ extends Spatial
 
 var wire_scene = preload("res://Wires.tscn")
 var lamp_scene = preload("res://Lamp.tscn")
+var generator_scene = preload("res://Generator.tscn")
 var circuits = {}
 var maxCircuit = 1
 
@@ -75,10 +76,9 @@ func splitCircuits(circuitsToSplit):
 			circuit.queue_free()
 
 func lamp(pos, normal):
-	var new_lamp = lamp_scene.instance()
-	new_lamp.circuitManager = self
-	get_tree().root.add_child(new_lamp)
-	new_lamp.setPosition(pos, normal)
+	var wire = addWire(pos, normal)
+	wire.setDependent(lamp_scene)
+	wire.commitProposal()
 
 func toggle_switch(pos, normal):
 	var wire = allWires.get([pos, normal])
@@ -117,6 +117,14 @@ func merge(first, second):
 			m.changeCircuit(second)
 		circuits.erase(first.identifier)
 
+func initializeGenerator(generator):
+	prints("Generator", generator.global_transform.origin)
+	var pos = generator.global_transform.origin
+	
+	var wire = addWire((pos / 10).floor(), Vector3.UP)
+	wire.setDependent(generator_scene)
+	generator.queue_free()
+	#addWire()
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass
