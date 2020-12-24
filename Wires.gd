@@ -22,6 +22,8 @@ const LEFT = Vector3.LEFT
 const FORWARD = Vector3.FORWARD
 const BACK = Vector3.BACK
 
+const circuitDebugSymbol = false
+
 enum LegState {NOTHING, PROPOSED, COMMITTED}
 var legs = {
 	"posZ": LegState.NOTHING,
@@ -153,15 +155,16 @@ func changeCircuit(newCircuit):
 	$Sphere.visible = false
 	$Cylinder.visible = false
 	
-	match posmod(circuit.identifier, 4):
-		0:
-			$Cube.visible = true
-		1:
-			$Prism.visible = true
-		2:
-			$Sphere.visible = true
-		3:
-			$Cylinder.visible = true
+	if circuitDebugSymbol:
+		match posmod(circuit.identifier, 4):
+			0:
+				$Cube.visible = true
+			1:
+				$Prism.visible = true
+			2:
+				$Sphere.visible = true
+			3:
+				$Cylinder.visible = true
 
 # This one recurses through neighbours to spread our new circuit
 # It's used when there's a split to find the currently connected set
