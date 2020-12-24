@@ -2,6 +2,7 @@ extends Spatial
 
 var wire_scene = preload("res://Wires.tscn")
 var lamp_scene = preload("res://Lamp.tscn")
+var turret_scene = preload("res://Turret.tscn")
 var generator_scene = preload("res://Generator.tscn")
 var circuits = {}
 var maxCircuit = 1
@@ -78,6 +79,11 @@ func splitCircuits(circuitsToSplit):
 func lamp(pos, normal):
 	var wire = addWire(pos, normal)
 	wire.setDependent(lamp_scene)
+	wire.commitProposal()
+
+func turret(pos, normal):
+	var wire = addWire(pos, normal)
+	wire.setDependent(turret_scene)
 	wire.commitProposal()
 
 func toggle_switch(pos, normal):

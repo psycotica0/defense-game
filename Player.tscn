@@ -4282,3 +4282,6 @@ text = "You died
 0.00 seconds till respawn"
 align = 1
 valign = 1
+
+[node name="AimTarget" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.08508, 0 )

@@ -1,5 +1,7 @@
 extends KinematicBody
 
+class_name Player
+
 # Walking variables.
 # This manages how fast we are moving, fast we can walk,
 # how quickly we can get to top speed, how strong gravity is, and how high we jump.
@@ -391,6 +393,11 @@ func process_input(delta):
 		var target = getWirePos()
 		if target:
 			level.lamp(target[0], target[1])
+	
+	if Input.is_action_just_pressed("turret"):
+		var target = getWirePos()
+		if  target:
+			level.turret(target[0], target[1])
 	
 	if Input.is_action_just_pressed("toggle_switch"):
 		var target = getWirePos()
@@ -846,4 +853,7 @@ func add_grenade(additional_grenade):
 func bullet_hit(damage, bullet_global_transform):
 	# Removes damage from our health
 	health -= damage
+
+func getAimTarget():
+	return $AimTarget.global_transform.origin
 
