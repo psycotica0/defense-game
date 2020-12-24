@@ -2,6 +2,7 @@ extends Spatial
 
 onready var activeLight = $Spatial/ActiveLight
 onready var inactiveLight = $Spatial/InactiveLight
+onready var strainedLight = $Spatial/StrainedLight
 
 var circuit
 var source
@@ -9,7 +10,7 @@ var source
 const demand = 10
 
 func _ready():
-	deactivate()
+	turnOff()
 
 func changeCircuit(newCircuit):
 	var oldCircuit = circuit
@@ -18,23 +19,32 @@ func changeCircuit(newCircuit):
 		circuit.connect("power_updated", self, "circuitPowerChanged")
 		circuit.addSink(self)
 	else:
-		deactivate()
+		turnOff()
 		if oldCircuit:
 			oldCircuit.disconnect("power_updated", self, "circuitPowerChanged")
 			oldCircuit.removeSink(self)
 
-func activate():
+func fullPower():
 	activeLight.visible = true
 	inactiveLight.visible = false
+	strainedLight.visible = false
 
-func deactivate():
+func lowPower():
+	activeLight.visible = false
+	inactiveLight.visible = false
+	strainedLight.visible = true
+
+func turnOff():
 	activeLight.visible = false
 	inactiveLight.visible = true
+	strainedLight.visible = false
 
 func circuitPowerChanged(s_circuit, power):
 	# I don't know how async signals are, so I'll make sure nothing changed here
 	if circuit == s_circuit:
 		if power > 0:
-			activate()
+			fullPower()
+		elif circuit.capacity == 0:
+			turnOff()
 		else:
-			deactivate()
+			lowPower()
