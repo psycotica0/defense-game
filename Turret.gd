@@ -85,7 +85,11 @@ func processFiring(delta):
 	else:
 		# Keep us pointed at the center of our target
 		gunHolder.look_at(currentTarget.getAimTarget(), -source.normal)
+		var distance = gunHolder.global_transform.origin.distance_to(currentTarget.getAimTarget())
 		laser.visible = true
+		laser.mesh.height = distance
+		laser.translation.y = -(distance / 2) + 2.5
+		#prints("Laser Distance", distance, laser.mesh.height)
 
 func processTargetting(delta):
 	if not currentTarget:
