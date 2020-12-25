@@ -50,16 +50,25 @@ func changeState(newState):
 			laser.visible = false
 			currentTarget = null
 			gunHolder.rotation.x = deg2rad(-20)
+			if demand != 15:
+				demand = 15
+				circuit.call_deferred("updateDemand")
 			for ray in scanOrder:
 				ray.enabled = false
 		State.SCANNING:
 			laser.visible = false
 			currentTarget = null
 			gunHolder.rotation.x = 0
+			if demand != 15:
+				demand = 15
+				circuit.call_deferred("updateDemand")
 			for ray in scanOrder:
 				ray.enabled = true
 		State.TARGETTING, State.FIRING:
 			laser.visible = false
+			if demand != 25:
+				demand = 25
+				circuit.call_deferred("updateDemand")
 			for ray in scanOrder:
 				ray.enabled = true
 	currentState = newState
