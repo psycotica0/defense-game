@@ -19,6 +19,11 @@ var demand = 15
 var currentTarget
 var currentState = State.OFF
 
+var heat = 0
+var maxHeat = 20
+var heatRate = 30
+var ventRate = 20
+
 enum State {OFF, SCANNING, TARGETTING, FIRING, VENTING}
 
 func _ready():
@@ -57,7 +62,7 @@ func changeState(newState):
 				ray.enabled = true
 	currentState = newState
 
-func circuitPowerChanged(s_circuit, power):
+func circuitPowerChanged(s_circuit, _power):
 	if s_circuit == circuit:
 		if circuit.capacity == 0:
 			changeState(State.OFF)
@@ -75,13 +80,19 @@ func _physics_process(delta):
 		State.FIRING:
 			processFiring(delta)
 		State.VENTING:
-			pass
+			processVenting(delta)
+	
+	heat -= ventRate * delta
+	if heat < 0:
+		heat = 0
 
 func processFiring(delta):
 	if not currentTarget:
 		changeState(State.SCANNING)
 	elif barrelCast.get_collider() != currentTarget:
 		changeState(State.TARGETTING)
+	elif heat >= maxHeat:
+		changeState(State.VENTING)
 	else:
 		# Keep us pointed at the center of our target
 		gunHolder.look_at(currentTarget.getAimTarget(), -source.normal)
@@ -89,9 +100,14 @@ func processFiring(delta):
 		laser.visible = true
 		laser.mesh.height = distance
 		laser.translation.y = -(distance / 2) + 2.5
-		#prints("Laser Distance", distance, laser.mesh.height)
+		heat += heatRate * delta
 
-func processTargetting(delta):
+func processVenting(_delta):
+	if heat == 0:
+		changeState(State.FIRING)
+	# We cool down in all states, so there's nothing to do here but wait
+
+func processTargetting(_delta):
 	if not currentTarget:
 		changeState(State.SCANNING)
 	elif barrelCast.get_collider() == currentTarget:
