@@ -10,7 +10,9 @@ onready var belowCast = $"Gun Holder/BelowCast"
 var scanOrder = []
 
 onready var gunHolder = $"Gun Holder"
-onready var laser = $"Gun Holder/Barrel/Laser"
+onready var happyLaser = $"Gun Holder/Barrel/Laser"
+onready var sadLaser = $"Gun Holder/Barrel/SadLaser"
+onready var laser = sadLaser
 
 var source
 var circuit
@@ -62,12 +64,18 @@ func changeState(newState):
 				ray.enabled = true
 	currentState = newState
 
-func circuitPowerChanged(s_circuit, _power):
+func circuitPowerChanged(s_circuit, power):
 	if s_circuit == circuit:
 		if circuit.capacity == 0:
 			changeState(State.OFF)
-		elif currentState == State.OFF:
-			changeState(State.SCANNING)
+		else:
+			if power > 0:
+				becomeHappy()
+			else:
+				becomeSad()
+			
+			if currentState == State.OFF:
+				changeState(State.SCANNING)
 
 func _physics_process(delta):
 	match currentState:
@@ -85,6 +93,18 @@ func _physics_process(delta):
 	heat -= ventRate * delta
 	if heat < 0:
 		heat = 0
+
+func becomeSad():
+	happyLaser.visible = false
+	laser = sadLaser
+	ventRate = 10
+	changeState(currentState)
+
+func becomeHappy():
+	sadLaser.visible = false
+	laser = happyLaser
+	ventRate = 20
+	changeState(currentState)
 
 func processFiring(delta):
 	if not currentTarget:
