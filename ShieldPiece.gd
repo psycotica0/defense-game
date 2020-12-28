@@ -45,21 +45,25 @@ func getNeighbours():
 	box_shape.extents = Vector3(0.25, 0.25, 0.25)
 	query.set_shape(box_shape)
 	
-	query.transform.origin = to_global(Vector3(0,0,6))
+	query.transform.origin = to_global(Vector3(0,0,5))
 	for i in space.intersect_shape(query):
-		neighbours[Spot.POSZ] = i.collider
+		if i.collider != collisionBody:
+			neighbours[Spot.POSZ] = i.collider
 	
-	query.transform.origin = to_global(Vector3(0,0,-6))
+	query.transform.origin = to_global(Vector3(0,0,-5))
 	for i in space.intersect_shape(query):
-		neighbours[Spot.NEGZ] = i.collider
+		if i.collider != collisionBody:
+			neighbours[Spot.NEGZ] = i.collider
 	
-	query.transform.origin = to_global(Vector3(6,0,0))
+	query.transform.origin = to_global(Vector3(5,0,0))
 	for i in space.intersect_shape(query):
-		neighbours[Spot.POSX] = i.collider
+		if i.collider != collisionBody:
+			neighbours[Spot.POSX] = i.collider
 	
-	query.transform.origin = to_global(Vector3(-6,0,0))
+	query.transform.origin = to_global(Vector3(-5,0,0))
 	for i in space.intersect_shape(query):
-		neighbours[Spot.NEGX] = i.collider
+		if i.collider != collisionBody:
+			neighbours[Spot.NEGX] = i.collider
 	
 	return neighbours
 
