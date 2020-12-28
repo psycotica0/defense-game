@@ -509,7 +509,7 @@ func getWirePos():
 	
 	# Send our ray into the space state and see if we got a result.
 	# We want to exclude ourself, and the knife's Area so that does not mess up the results
-	var ray_result = state.intersect_ray(ray_from, ray_to, [self, $Rotation_Helper/Gun_Fire_Points/Knife_Point/Area])
+	var ray_result = state.intersect_ray(ray_from, ray_to, [], Globals.WALLS_LAYER)
 	if ray_result:
 		var pos = ray_result["position"]
 		var normal = ray_result["normal"].snapped(Vector3(1, 1, 1))

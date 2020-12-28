@@ -108,7 +108,8 @@ shield={
 
 3d_physics/layer_1="Player"
 3d_physics/layer_2="Wires"
-3d_physics/layer_3="ShieldConnection"
+3d_physics/layer_3="Shield"
+3d_physics/layer_4="Walls & Floors"
 
 [rendering]
 

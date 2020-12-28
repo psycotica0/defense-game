@@ -48,6 +48,7 @@ static func querySpots(world, global_points, exclude = null):
 	var box_shape = BoxShape.new()
 	box_shape.extents = Vector3(0.25, 0.25, 0.25)
 	query.set_shape(box_shape)
+	query.collision_mask = Globals.WALLS_LAYER | Globals.SHIELD_LAYER
 	
 	var return_array = []
 	for p in global_points:
