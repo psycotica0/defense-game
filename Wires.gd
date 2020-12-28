@@ -204,9 +204,9 @@ func setDependent(klass, direction = Vector3.RIGHT):
 	if dependent.has_method("setDirection"):
 		dependent.setDirection(direction)
 	
-	add_child(dependent)
-	
 	dependent.source = self
+	
+	add_child(dependent)
 	if circuit:
 		dependent.changeCircuit(circuit)
 
