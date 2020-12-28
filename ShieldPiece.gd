@@ -4,12 +4,11 @@ class_name ShieldPiece
 
 onready var collisionBody = $StaticBody
 
-enum Spot { # POSX, NEGX, 
-	POSZ, NEGZ}
+enum Spot { POSX, NEGX, POSZ, NEGZ}
 
 var surroundings = {
-#	Spot.POSX: [],
-#	Spot.NEGX: [],
+	Spot.POSX: [],
+	Spot.NEGX: [],
 	Spot.POSZ: [],
 	Spot.NEGZ: [],
 }
@@ -19,7 +18,6 @@ var strength = 0
 var full = false
 
 func _ready():
-	prints("ready", global_transform.origin)
 	pass
 
 func recomputeFullness():
@@ -37,6 +35,8 @@ func getNeighbours():
 	var neighbours = {
 		Spot.POSZ: null,
 		Spot.NEGZ: null,
+		Spot.POSX: null,
+		Spot.NEGX: null,
 	}
 	
 	var space = get_world().direct_space_state
@@ -52,6 +52,14 @@ func getNeighbours():
 	query.transform.origin = to_global(Vector3(0,0,-6))
 	for i in space.intersect_shape(query):
 		neighbours[Spot.NEGZ] = i.collider
+	
+	query.transform.origin = to_global(Vector3(6,0,0))
+	for i in space.intersect_shape(query):
+		neighbours[Spot.POSX] = i.collider
+	
+	query.transform.origin = to_global(Vector3(-6,0,0))
+	for i in space.intersect_shape(query):
+		neighbours[Spot.NEGX] = i.collider
 	
 	return neighbours
 

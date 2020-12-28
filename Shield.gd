@@ -13,7 +13,7 @@ func _ready():
 	spreadShield()
 
 func spreadShield():
-	for i in range(0, STRENGTH - 1):
+	for i in range(1, STRENGTH):
 		print(i)
 		for child in target.get_children():
 			var neigh = child.getNeighbours()
@@ -21,5 +21,23 @@ func spreadShield():
 				var newOne = template.duplicate()
 				newOne.transform.origin = child.transform.origin
 				newOne.translate(Vector3(0, 0, 10))
+				newOne.strength = STRENGTH - i
+				target.add_child(newOne)
+			if not neigh[ShieldPiece.Spot.NEGZ]:
+				var newOne = template.duplicate()
+				newOne.transform.origin = child.transform.origin
+				newOne.translate(Vector3(0, 0, -10))
+				newOne.strength = STRENGTH - i
+				target.add_child(newOne)
+			if not neigh[ShieldPiece.Spot.POSX]:
+				var newOne = template.duplicate()
+				newOne.transform.origin = child.transform.origin
+				newOne.translate(Vector3(10, 0, 0))
+				newOne.strength = STRENGTH - i
+				target.add_child(newOne)
+			if not neigh[ShieldPiece.Spot.NEGX]:
+				var newOne = template.duplicate()
+				newOne.transform.origin = child.transform.origin
+				newOne.translate(Vector3(-10, 0, 0))
 				newOne.strength = STRENGTH - i
 				target.add_child(newOne)
