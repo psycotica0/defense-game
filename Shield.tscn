@@ -1,0 +1,183 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Shield.gd" type="Script" id=1]
+[ext_resource path="res://ShieldPiece.gd" type="Script" id=2]
+
+[sub_resource type="SpatialMaterial" id=2]
+albedo_color = Color( 1, 0.470588, 1, 1 )
+emission_enabled = true
+emission = Color( 1, 0.470588, 1, 1 )
+emission_energy = 1.0
+emission_operator = 0
+emission_on_uv2 = false
+
+[sub_resource type="CubeMesh" id=1]
+material = SubResource( 2 )
+size = Vector3( 0.2, 0.2, 10 )
+
+[sub_resource type="BoxShape" id=3]
+extents = Vector3( 4.9, 2, 4.9 )
+
+[sub_resource type="BoxShape" id=4]
+
+[node name="Shield" type="Spatial"]
+script = ExtResource( 1 )
+
+[node name="Template" type="Spatial" parent="."]
+script = ExtResource( 2 )
+
+[node name="MeshInstance2" type="MeshInstance" parent="Template"]
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance3" type="MeshInstance" parent="Template"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance4" type="MeshInstance" parent="Template"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance5" type="MeshInstance" parent="Template"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 0 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance6" type="MeshInstance" parent="Template"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance7" type="MeshInstance" parent="Template"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 0 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance8" type="MeshInstance" parent="Template"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 0 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance9" type="MeshInstance" parent="Template"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 0 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance10" type="MeshInstance" parent="Template"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 0 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance11" type="MeshInstance" parent="Template"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 0 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance12" type="MeshInstance" parent="Template"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 0 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance13" type="MeshInstance" parent="Template"]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 0, 0, 0 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance14" type="MeshInstance" parent="Template"]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 0, 0, 1 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance15" type="MeshInstance" parent="Template"]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 0, 0, 2 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance16" type="MeshInstance" parent="Template"]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 0, 0, 3 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance17" type="MeshInstance" parent="Template"]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 0, 0, 4 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance18" type="MeshInstance" parent="Template"]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 0, 0, 5 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance19" type="MeshInstance" parent="Template"]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 0, 0, -1 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance20" type="MeshInstance" parent="Template"]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 0, 0, -2 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance21" type="MeshInstance" parent="Template"]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 0, 0, -3 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance22" type="MeshInstance" parent="Template"]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 0, 0, -4 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="MeshInstance23" type="MeshInstance" parent="Template"]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 0, 0, -5 )
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="StaticBody" type="StaticBody" parent="Template"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Template/StaticBody"]
+shape = SubResource( 3 )
+
+[node name="PosZ" type="Area" parent="Template"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5 )
+collision_layer = 4
+collision_mask = 5
+
+[node name="CollisionShape" type="CollisionShape" parent="Template/PosZ"]
+shape = SubResource( 4 )
+
+[node name="NegZ" type="Area" parent="Template"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5 )
+collision_layer = 4
+collision_mask = 5
+
+[node name="CollisionShape" type="CollisionShape" parent="Template/NegZ"]
+shape = SubResource( 4 )
+
+[node name="PosX" type="Area" parent="Template"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 0 )
+collision_layer = 4
+collision_mask = 5
+
+[node name="CollisionShape" type="CollisionShape" parent="Template/PosX"]
+shape = SubResource( 4 )
+
+[node name="NegX" type="Area" parent="Template"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 0 )
+collision_layer = 4
+collision_mask = 5
+
+[node name="CollisionShape" type="CollisionShape" parent="Template/NegX"]
+shape = SubResource( 4 )
+
+[node name="RealShield" type="Spatial" parent="."]
+[connection signal="area_entered" from="Template/PosZ" to="Template" method="_on_PosZ_area_entered"]
+[connection signal="area_exited" from="Template/PosZ" to="Template" method="_on_PosZ_area_exited"]
+[connection signal="body_entered" from="Template/PosZ" to="Template" method="_on_PosZ_body_entered"]
+[connection signal="body_exited" from="Template/PosZ" to="Template" method="_on_PosZ_body_exited"]
+[connection signal="area_entered" from="Template/NegZ" to="Template" method="_on_NegZ_area_entered"]
+[connection signal="area_exited" from="Template/NegZ" to="Template" method="_on_NegZ_area_exited"]
+[connection signal="body_entered" from="Template/NegZ" to="Template" method="_on_NegZ_body_entered"]
+[connection signal="body_exited" from="Template/NegZ" to="Template" method="_on_NegZ_body_exited"]

@@ -200,8 +200,8 @@ func setDependent(klass):
 	
 	dependent = klass.instance()
 	
-	add_child(dependent)
 	dependent.transform = $MountPoint.transform
+	add_child(dependent)
 	
 	dependent.source = self
 	if circuit:

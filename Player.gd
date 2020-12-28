@@ -399,6 +399,11 @@ func process_input(delta):
 		if  target:
 			level.turret(target[0], target[1])
 	
+	if Input.is_action_just_pressed("shield"):
+		var target = getWirePos()
+		if target:
+			level.shield(target[0], target[1])
+	
 	if Input.is_action_just_pressed("toggle_switch"):
 		var target = getWirePos()
 		if target:
