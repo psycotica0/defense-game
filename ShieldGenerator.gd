@@ -15,9 +15,18 @@ func _ready():
 	# Rotate ourselves so our positive Z is pointing in the way the player is facing
 	look_at(global_transform.origin - direction, source.normal)
 	# Figure out what area we're filling
-	shield = shieldScene.instance()
-	shield.transform = shieldSpawn.global_transform
-	get_tree().root.add_child(shield)
+	var point = ShieldPiece.querySpots(
+		get_world(),
+		[shieldSpawn.global_transform.origin])[0]
+	
+	if point:
+		shield = point
+	else:
+		shield = shieldScene.instance()
+		shield.transform = shieldSpawn.global_transform
+		get_tree().root.add_child(shield)
+	
+	shield.addEmitter(self)
 
 func setDirection(dir):
 	direction = dir

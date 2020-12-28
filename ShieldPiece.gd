@@ -76,7 +76,10 @@ static func querySpots(world, global_points, exclude = null):
 		# For now, though, just do the dumb thing and let it return the last thing
 		for i in space.intersect_shape(query):
 			if not exclude or i.collider != exclude:
-				thing = i.collider
+				if "shield" in i.collider.get_parent():
+					thing = i.collider.get_parent().shield
+				else:
+					thing = i.collider
 		
 		return_array.push_back(thing)
 	
