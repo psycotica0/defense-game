@@ -8,7 +8,6 @@ const STRENGTH = 3
 func _ready():
 	var newOne = template.duplicate()
 	remove_child(template)
-	newOne.transform.origin = Vector3(0,5,0)
 	target.add_child(newOne)
 #	spreadShield()
 

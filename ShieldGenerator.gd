@@ -4,7 +4,7 @@ var source
 
 const shieldScene = preload("res://Shield.tscn")
 
-onready var shieldStart = $ShieldStart
+onready var shieldSpawn = $ShieldSpawn
 
 var shield
 var direction
@@ -16,7 +16,7 @@ func _ready():
 	look_at(global_transform.origin - direction, source.normal)
 	# Figure out what area we're filling
 	shield = shieldScene.instance()
-	shield.transform.origin = global_transform.origin
+	shield.transform = shieldSpawn.global_transform
 	get_tree().root.add_child(shield)
 
 func setDirection(dir):
