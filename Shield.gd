@@ -13,7 +13,6 @@ func _ready():
 
 func spreadShield():
 	for i in range(1, STRENGTH):
-		print(i)
 		for child in target.get_children():
 			var neigh = child.getNeighbours()
 			if not neigh[ShieldPiece.Spot.POSZ]:
