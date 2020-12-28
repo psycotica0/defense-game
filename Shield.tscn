@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Shield.gd" type="Script" id=1]
 [ext_resource path="res://ShieldPiece.gd" type="Script" id=2]
@@ -17,8 +17,6 @@ size = Vector3( 0.2, 0.2, 10 )
 
 [sub_resource type="BoxShape" id=3]
 extents = Vector3( 4.9, 2, 4.9 )
-
-[sub_resource type="BoxShape" id=4]
 
 [node name="Shield" type="Spatial"]
 script = ExtResource( 1 )
@@ -141,44 +139,4 @@ material/0 = null
 [node name="CollisionShape" type="CollisionShape" parent="Template/StaticBody"]
 shape = SubResource( 3 )
 
-[node name="PosZ" type="Area" parent="Template"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5 )
-collision_layer = 4
-collision_mask = 5
-
-[node name="CollisionShape" type="CollisionShape" parent="Template/PosZ"]
-shape = SubResource( 4 )
-
-[node name="NegZ" type="Area" parent="Template"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5 )
-collision_layer = 4
-collision_mask = 5
-
-[node name="CollisionShape" type="CollisionShape" parent="Template/NegZ"]
-shape = SubResource( 4 )
-
-[node name="PosX" type="Area" parent="Template"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 0 )
-collision_layer = 4
-collision_mask = 5
-
-[node name="CollisionShape" type="CollisionShape" parent="Template/PosX"]
-shape = SubResource( 4 )
-
-[node name="NegX" type="Area" parent="Template"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 0 )
-collision_layer = 4
-collision_mask = 5
-
-[node name="CollisionShape" type="CollisionShape" parent="Template/NegX"]
-shape = SubResource( 4 )
-
 [node name="RealShield" type="Spatial" parent="."]
-[connection signal="area_entered" from="Template/PosZ" to="Template" method="_on_PosZ_area_entered"]
-[connection signal="area_exited" from="Template/PosZ" to="Template" method="_on_PosZ_area_exited"]
-[connection signal="body_entered" from="Template/PosZ" to="Template" method="_on_PosZ_body_entered"]
-[connection signal="body_exited" from="Template/PosZ" to="Template" method="_on_PosZ_body_exited"]
-[connection signal="area_entered" from="Template/NegZ" to="Template" method="_on_NegZ_area_entered"]
-[connection signal="area_exited" from="Template/NegZ" to="Template" method="_on_NegZ_area_exited"]
-[connection signal="body_entered" from="Template/NegZ" to="Template" method="_on_NegZ_body_entered"]
-[connection signal="body_exited" from="Template/NegZ" to="Template" method="_on_NegZ_body_exited"]

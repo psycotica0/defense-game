@@ -1,7 +1,5 @@
 extends Spatial
 
-var source
-
 const shieldScene = preload("res://Shield.tscn")
 
 onready var shieldSpawn = $ShieldSpawn
@@ -9,10 +7,9 @@ onready var shieldSpawn = $ShieldSpawn
 var shield
 var direction
 
+var source
 var circuit
 var demand = 10
-
-var extentsFound = false
 
 func _ready():
 	# Rotate ourselves so our positive Z is pointing in the way the player is facing
