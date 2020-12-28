@@ -21,12 +21,14 @@ func _ready():
 	
 	if point:
 		shield = point
+		shield.addEmitter(self)
+		shield.spreadShield()
 	else:
 		shield = shieldScene.instance()
 		shield.transform = shieldSpawn.global_transform
+		shield.addEmitter(self)
 		get_tree().root.add_child(shield)
 	
-	shield.addEmitter(self)
 
 func setDirection(dir):
 	direction = dir
