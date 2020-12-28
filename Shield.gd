@@ -12,6 +12,10 @@ func _ready():
 	spreadShield()
 
 func spreadShield():
+	if emitters.size() == 0:
+		queue_free()
+		return
+	
 	# Remove Existing Children
 	for child in target.get_children():
 		target.remove_child(child)
@@ -59,3 +63,6 @@ func makePiece(position, strength):
 func addEmitter(emitter):
 	if not emitters.has(emitter):
 		emitters.push_back(emitter)
+
+func removeEmitter(emitter):
+	emitters.erase(emitter)
