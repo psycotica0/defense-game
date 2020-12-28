@@ -10,7 +10,7 @@ func _ready():
 	remove_child(template)
 	newOne.transform.origin = Vector3(0,5,0)
 	target.add_child(newOne)
-	spreadShield()
+#	spreadShield()
 
 func spreadShield():
 	for i in range(1, STRENGTH):

@@ -87,9 +87,9 @@ func turret(pos, normal):
 	wire.setDependent(turret_scene)
 	wire.commitProposal()
 
-func shield(pos, normal):
+func shield(pos, normal, direction):
 	var wire = addWire(pos, normal)
-	wire.setDependent(shield_scene)
+	wire.setDependent(shield_scene, direction)
 	wire.commitProposal()
 
 func toggle_switch(pos, normal):

@@ -190,7 +190,7 @@ func setLegVisibility():
 	$Proposed/PosZ.visible = legs.posZ == LegState.PROPOSED
 	$Proposed/NegZ.visible = legs.negZ == LegState.PROPOSED
 
-func setDependent(klass):
+func setDependent(klass, direction = Vector3.RIGHT):
 	if dependent:
 		if dependent is Generator:
 			# Don't allow people to change generators into other stuff
@@ -201,6 +201,9 @@ func setDependent(klass):
 	dependent = klass.instance()
 	
 	dependent.transform = $MountPoint.transform
+	if dependent.has_method("setDirection"):
+		dependent.setDirection(direction)
+	
 	add_child(dependent)
 	
 	dependent.source = self

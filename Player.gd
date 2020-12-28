@@ -402,7 +402,7 @@ func process_input(delta):
 	if Input.is_action_just_pressed("shield"):
 		var target = getWirePos()
 		if target:
-			level.shield(target[0], target[1])
+			level.shield(target[0], target[1], target[2])
 	
 	if Input.is_action_just_pressed("toggle_switch"):
 		var target = getWirePos()
@@ -506,6 +506,7 @@ func getWirePos():
 	var center_position = get_viewport().size/2
 	var ray_from = camera.project_ray_origin(center_position)
 	var ray_to = ray_from + camera.project_ray_normal(center_position) * WIRE_RANGE
+	
 	# Send our ray into the space state and see if we got a result.
 	# We want to exclude ourself, and the knife's Area so that does not mess up the results
 	var ray_result = state.intersect_ray(ray_from, ray_to, [self, $Rotation_Helper/Gun_Fire_Points/Knife_Point/Area])
@@ -535,7 +536,29 @@ func getWirePos():
 			# This is a normalized ID for the cubes that occupy this space
 			var cube_coord = (pos / 10).floor()
 			# print("Collided ", ray_result["position"], ray_result["normal"], cube_coord)
-			return [cube_coord, normal]
+			
+			var camera_axis = camera.project_ray_normal(center_position)
+			if normal == Vector3.BACK or normal == Vector3.FORWARD:
+				# If we're looking at a Z-face, we only care about X direction
+				camera_axis.z = 0
+			elif normal == Vector3.LEFT or normal == Vector3.RIGHT:
+				# If we're looking at a X-face, we only care about Z direction
+				camera_axis.x = 0
+			
+			var camera_abs = camera_axis.abs()
+			# For now, we don't care about vertical change, just compass direction
+			if camera_abs.x > camera_abs.z:
+				if camera_axis.x < 0:
+					camera_axis = Vector3.LEFT
+				else:
+					camera_axis = Vector3.RIGHT
+			else:
+				if camera_axis.z < 0:
+					camera_axis = Vector3.FORWARD
+				else:
+					camera_axis = Vector3.BACK
+			
+			return [cube_coord, normal, camera_axis]
 
 func process_view_input(delta):
 	
