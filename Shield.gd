@@ -9,7 +9,7 @@ func _ready():
 	var newOne = template.duplicate()
 	remove_child(template)
 	target.add_child(newOne)
-#	spreadShield()
+	spreadShield()
 
 func spreadShield():
 	for i in range(1, STRENGTH):
