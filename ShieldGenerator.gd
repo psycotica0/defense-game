@@ -11,6 +11,10 @@ var source
 var circuit
 var demand = 10
 
+# This is a convenient access point used when tracing connectivity, while splitting shields
+# This value only means something when the emitter is on, and also shield pieces are thrown out pretty often
+var shieldPiece
+
 func _ready():
 	# Rotate ourselves so our positive Z is pointing in the way the player is facing
 	look_at(global_transform.origin - direction, source.normal)
@@ -22,8 +26,8 @@ func enable():
 			get_world(),
 			[shieldSpawn.global_transform.origin])[0]
 		
-		if point:
-			shield = point
+		if point and "shield" in point:
+			shield = point.shield
 			shield.addEmitter(self)
 			shield.spreadShield()
 		else:
@@ -35,8 +39,9 @@ func enable():
 func disable():
 	if shield:
 		shield.removeEmitter(self)
-		shield.spreadShield()
+		shield.splitShield()
 		shield = null
+		shieldPiece = null
 
 func setDirection(dir):
 	direction = dir
