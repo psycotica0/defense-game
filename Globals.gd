@@ -175,5 +175,3 @@ func play_sound(sound_name, loop_sound=false, sound_position=null):
 	# If we do not have an audio clip with the name sound_name, print a error message
 	else:
 		print ("ERROR: cannot play sound that does not exist in audio_clips!")
-
-
