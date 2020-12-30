@@ -408,6 +408,13 @@ func process_input(delta):
 		var target = getWirePos()
 		if target:
 			level.toggle_switch(target[0], target[1])
+	
+	if Input.is_action_just_pressed("overdraw"):
+		var view = get_tree().root
+		if view.debug_draw == Viewport.DEBUG_DRAW_DISABLED:
+			view.debug_draw = Viewport.DEBUG_DRAW_OVERDRAW
+		else:
+			view.debug_draw = Viewport.DEBUG_DRAW_DISABLED
 
 	
 	# ----------------------------------
