@@ -9,9 +9,14 @@ var currentState
 var pointsToScan = []
 var walkOptions = []
 const SCAN_DIMENSION = 5
+const WALK_SPEED = 2
+
+var rand = RandomNumberGenerator.new()
+var currentDestination
 
 func _ready():
 	changeState(State.SCANNING)
+	rand.randomize()
 
 func changeState(newState):
 	if newState == currentState:
@@ -24,11 +29,13 @@ func changeState(newState):
 					pointsToScan.push_back(Vector3(x, 0, z) * 10)
 			walkOptions.clear()
 		State.WALKING:
-			for w in walkOptions:
-				print(w)
-				var test = $Body.duplicate()
-				test.transform.origin = to_local(w * 10 + Vector3(5,0,5))
-				add_child(test)
+			var idx = rand.randi_range(0, walkOptions.size() - 1)
+			currentDestination = walkOptions[idx] * 10 + Vector3(5, global_transform.origin.y, 5)
+#			for w in walkOptions:
+#				print(w)
+#				var test = $Body.duplicate()
+#				test.transform.origin = to_local(w * 10 + Vector3(5,0,5))
+#				add_child(test)
 	
 	currentState = newState
 
@@ -36,6 +43,8 @@ func _physics_process(delta):
 	match currentState:
 		State.SCANNING:
 			process_scanning(delta)
+		State.WALKING:
+			process_walking(delta)
 	pass
 
 func process_scanning(_delta):
@@ -56,3 +65,13 @@ func process_scanning(_delta):
 				walkOptions.push_back(cube_coord)
 	else:
 		changeState(State.WALKING)
+
+func process_walking(_delta):
+	var vect = currentDestination - global_transform.origin
+	
+	# Eventually I'll probably want some kind of "stuck" detection 
+	if vect.length_squared() < 1:
+		changeState(State.SCANNING)
+		return
+	
+	move_and_slide(vect.normalized() * WALK_SPEED)
