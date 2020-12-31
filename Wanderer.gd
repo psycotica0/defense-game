@@ -10,6 +10,8 @@ var pointsToScan = []
 var walkOptions = []
 const SCAN_DIMENSION = 5
 const WALK_SPEED = 2
+const TURN_RAD_PER_SEC = deg2rad(90)
+const RAD_EPSILON = deg2rad(5)
 
 var rand = RandomNumberGenerator.new()
 var currentDestination
@@ -66,12 +68,23 @@ func process_scanning(_delta):
 	else:
 		changeState(State.WALKING)
 
-func process_walking(_delta):
+func process_walking(delta):
 	var vect = currentDestination - global_transform.origin
 	
-	# Eventually I'll probably want some kind of "stuck" detection 
+	# Eventually I'll probably want some kind of "stuck" detection
 	if vect.length_squared() < 1:
 		changeState(State.SCANNING)
 		return
 	
-	move_and_slide(vect.normalized() * WALK_SPEED)
+	# As of 3.2 Vector3 doesn't have the ability to get a signed angle between things
+	# So instead we make 2D versions and use that
+	var relative = to_local(currentDestination)
+	var relative2d = Vector2(relative.x, relative.z)
+	var angle = Vector2(0, 1).angle_to(relative2d)
+	
+	if -RAD_EPSILON < angle and angle < RAD_EPSILON:
+		move_and_slide(vect.normalized() * WALK_SPEED)
+	elif angle < 0:
+		rotate_y(TURN_RAD_PER_SEC * delta)
+	else:
+		rotate_y(-TURN_RAD_PER_SEC * delta)
