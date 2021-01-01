@@ -1,6 +1,7 @@
 extends KinematicBody
 
 onready var scanner = $Scanner
+onready var anim = $AnimationPlayer
 
 enum State {
 	SCANNING,   # This is when it's wandering and looking for a nice place to walk next
@@ -44,16 +45,19 @@ func changeState(newState):
 				for z in range(-SCAN_DIMENSION, SCAN_DIMENSION):
 					pointsToScan.push_back(Vector3(x, 0, z) * 10)
 			walkOptions.clear()
+			anim.play("Scanning")
 		State.WALKING:
 			currentTarget = null
 			var idx = rand.randi_range(0, walkOptions.size() - 1)
 			currentDestination = walkOptions[idx] * 10 + Vector3(5, global_transform.origin.y, 5)
+			anim.play("Walking")
 		State.CHASING:
 			# If I add more state here about the current target
 			# I may want to look at the logic for changing targets mid-chase
 			currentDestination = null
 			walkOptions.clear()
 			pointsToScan.clear()
+			anim.play("Chasing")
 		State.HUNTING:
 			# Technically the target is currently out of sight by the time we move to hunting
 			# But structurally I like this better than keeping track all along
@@ -62,6 +66,7 @@ func changeState(newState):
 			# How far could I have gotten
 			currentDestination = currentTarget.global_transform.origin
 			currentTarget = null
+			anim.play("Chasing")
 		State.LOOKING:
 			currentTarget = null
 			currentDestination = null
@@ -72,6 +77,7 @@ func changeState(newState):
 				look1 = -LOOK_ANGLE
 				look2 = LOOK_ANGLE
 			lookState = 1
+			anim.play("Looking")
 	
 	currentState = newState
 
