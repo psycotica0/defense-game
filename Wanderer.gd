@@ -49,6 +49,8 @@ func changeState(newState):
 			var idx = rand.randi_range(0, walkOptions.size() - 1)
 			currentDestination = walkOptions[idx] * 10 + Vector3(5, global_transform.origin.y, 5)
 		State.CHASING:
+			# If I add more state here about the current target
+			# I may want to look at the logic for changing targets mid-chase
 			currentDestination = null
 			walkOptions.clear()
 			pointsToScan.clear()
@@ -186,4 +188,7 @@ func _on_Vision_vision_entered(body):
 
 func _on_Vision_vision_exited(body):
 	if body == currentTarget:
-		changeState(State.HUNTING)
+		if $Vision.visibleBodies().empty():
+			changeState(State.HUNTING)
+		else:
+			currentTarget = $Vision.visibleBodies().front()

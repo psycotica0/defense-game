@@ -16,6 +16,8 @@ export(int, LAYERS_3D_PHYSICS) var collision_mask = 0
 enum VisionState {BOX, CONE, VISIBLE}
 
 var bodies = {}
+var visibleBodiesCache = []
+var arrayCache = false
 
 signal vision_entered(body)
 signal vision_exited(body)
@@ -76,14 +78,17 @@ func physics_process(_delta):
 			if pointVisible(p):
 				if s != VisionState.VISIBLE:
 					bodies[b] = VisionState.VISIBLE
+					arrayCache = false
 					emit_signal("vision_entered", b)
 			else:
 				bodies[b] = VisionState.CONE
 				if s == VisionState.VISIBLE:
+					arrayCache = false
 					emit_signal("vision_exited", b)
 		else:
 			bodies[b] = VisionState.BOX
 			if s == VisionState.VISIBLE:
+				arrayCache = false
 				emit_signal("vision_exited", b)
 
 func toolSucks():
@@ -116,11 +121,23 @@ func pointVisible(point):
 	
 	return false
 
+func visibleBodies():
+	if not arrayCache:
+		arrayCache = true
+		visibleBodiesCache.clear()
+		for b in bodies:
+			if bodies[b] == VisionState.VISIBLE:
+				visibleBodiesCache.push_back(b)
+	
+	return visibleBodiesCache
+
 func _on_Area_body_entered(body):
 	bodies[body] = VisionState.BOX
 
 func _on_Area_body_exited(body):
-	if bodies[body] == VisionState.VISIBLE:
+	var s = bodies[body]
+	bodies.erase(body)
+	if s == VisionState.VISIBLE:
+		arrayCache = false
 		emit_signal("vision_exited", body)
 	
-	bodies.erase(body)
