@@ -10,11 +10,12 @@ var halfAngleRad = deg2rad(angle)
 export var length = 10.0 setget setLength
 export(int, LAYERS_3D_PHYSICS) var collision_mask = 0
 
-# These are the things that are inside the box _and_ inside the wedge
-var inside = {}
+# Box is for things in our bounding box (simplest)
+# Cone is for things in the defined cone
+# Visible is for things inside the cone and with clear line of sight
+enum VisionState {BOX, CONE, VISIBLE}
 
-# These are the things that are only inside the box, but outside the wedge
-var purgatory = {}
+var bodies = {}
 
 signal vision_entered(body)
 signal vision_exited(body)
@@ -59,7 +60,6 @@ func setShapes():
 		collisionShape.translation.z = length / 2
 
 func _ready():
-	print("Ready")
 	setShapes()
 	$Area.collision_mask = collision_mask
 
@@ -68,19 +68,26 @@ func _physics_process(delta):
 		physics_process(delta)
 
 func physics_process(_delta):
-	for b in purgatory:
-		if pointInWedge(b.global_transform.origin):
-			emit_signal("vision_entered", b)
-			print("Enter")
-			purgatory.erase(b)
-			inside[b] = true
-	
-	for b in inside:
-		if not pointInWedge(b.global_transform.origin):
-			emit_signal("vision_exited", b)
-			print("Exit")
-			inside.erase(b)
-			purgatory[b] = true
+	for b in bodies:
+		var s = bodies[b]
+		var p = b.global_transform.origin
+		
+		if pointInWedge(p):
+			if pointVisible(p):
+				if s != VisionState.VISIBLE:
+					bodies[b] = VisionState.VISIBLE
+					emit_signal("vision_entered", b)
+					print("Enter")
+			else:
+				bodies[b] = VisionState.CONE
+				if s == VisionState.VISIBLE:
+					emit_signal("vision_exited", b)
+					print("Exit")
+		else:
+			bodies[b] = VisionState.BOX
+			if s == VisionState.VISIBLE:
+				emit_signal("vision_exited", b)
+				print("Exit")
 
 func toolSucks():
 	if Engine.is_editor_hint():
@@ -100,12 +107,24 @@ func pointInWedge(point):
 	
 	return abs(localAngle) < halfAngleRad
 
+func pointVisible(point):
+	var state = get_world().direct_space_state
+	# I was running into a problem where the origin was near the ground and clipping through the floor when at a distance
+	# So, this isn't great because it means the vision could just shoot over someone's head, but basically always scan at the middle of the cone
+	point.y = global_transform.origin.y
+	var ray_result = state.intersect_ray(global_transform.origin, point, [], Globals.WALLS_LAYER | collision_mask)
+	if ray_result and ray_result.collider:
+		if ray_result.collider.collision_layer & collision_mask:
+			return true
+	
+	return false
+
 func _on_Area_body_entered(body):
-	purgatory[body] = true
+	bodies[body] = VisionState.BOX
 
 func _on_Area_body_exited(body):
-	if inside.get(body):
+	if bodies[body] == VisionState.VISIBLE:
 		emit_signal("vision_exited", body)
 		print("Exit")
-	inside.erase(body)
-	purgatory.erase(body)
+	
+	bodies.erase(body)
