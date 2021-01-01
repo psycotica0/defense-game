@@ -77,17 +77,14 @@ func physics_process(_delta):
 				if s != VisionState.VISIBLE:
 					bodies[b] = VisionState.VISIBLE
 					emit_signal("vision_entered", b)
-					print("Enter")
 			else:
 				bodies[b] = VisionState.CONE
 				if s == VisionState.VISIBLE:
 					emit_signal("vision_exited", b)
-					print("Exit")
 		else:
 			bodies[b] = VisionState.BOX
 			if s == VisionState.VISIBLE:
 				emit_signal("vision_exited", b)
-				print("Exit")
 
 func toolSucks():
 	if Engine.is_editor_hint():
@@ -125,6 +122,5 @@ func _on_Area_body_entered(body):
 func _on_Area_body_exited(body):
 	if bodies[body] == VisionState.VISIBLE:
 		emit_signal("vision_exited", body)
-		print("Exit")
 	
 	bodies.erase(body)

@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Wanderer.gd" type="Script" id=1]
+[ext_resource path="res://Vision.tscn" type="PackedScene" id=2]
 
 [sub_resource type="CapsuleMesh" id=1]
 mid_height = 7.0
@@ -31,3 +32,9 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.5, 0 )
 [node name="CollisionShape" type="CollisionShape" parent="."]
 transform = Transform( 1, 0, 0, 0, -1.62921e-07, -1, 0, 1, -1.62921e-07, 0, 4, 0 )
 shape = SubResource( 3 )
+
+[node name="Vision" parent="." instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.17168, 1.26256 )
+collision_mask = 5
+[connection signal="vision_entered" from="Vision" to="." method="_on_Vision_vision_entered"]
+[connection signal="vision_exited" from="Vision" to="." method="_on_Vision_vision_exited"]
