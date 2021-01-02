@@ -94,10 +94,10 @@ func physics_process(_delta):
 func toolSucks():
 	if Engine.is_editor_hint():
 		if not debugCone:
-			debugCone = get_node("DebugLook")
+			debugCone = get_node_or_null("DebugLook")
 		
 		if not collisionShape:
-			collisionShape = get_node("Area/CollisionShape")
+			collisionShape = get_node_or_null("Area/CollisionShape")
 
 func pointInWedge(point):
 	# Since I already know it's in the box, and the box's dimensions line up
