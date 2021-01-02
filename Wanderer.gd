@@ -48,9 +48,12 @@ func changeState(newState):
 			anim.play("Scanning")
 		State.WALKING:
 			currentTarget = null
-			var idx = rand.randi_range(0, walkOptions.size() - 1)
-			currentDestination = walkOptions[idx] * 10 + Vector3(5, global_transform.origin.y, 5)
-			anim.play("Walking")
+			if walkOptions.empty():
+				changeState(State.SCANNING)
+			else:
+				var idx = rand.randi_range(0, walkOptions.size() - 1)
+				currentDestination = walkOptions[idx] * 10 + Vector3(5, global_transform.origin.y, 5)
+				anim.play("Walking")
 		State.CHASING:
 			# If I add more state here about the current target
 			# I may want to look at the logic for changing targets mid-chase
