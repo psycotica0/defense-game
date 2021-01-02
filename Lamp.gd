@@ -1,4 +1,4 @@
-extends Spatial
+extends StaticBody
 
 onready var activeLight = $Spatial/ActiveLight
 onready var inactiveLight = $Spatial/InactiveLight
@@ -23,6 +23,8 @@ func changeCircuit(newCircuit):
 		if oldCircuit:
 			oldCircuit.disconnect("power_updated", self, "circuitPowerChanged")
 			oldCircuit.removeSink(self)
+	
+	$Health.changeCircuit(circuit)
 
 func fullPower():
 	activeLight.visible = true
@@ -48,3 +50,9 @@ func circuitPowerChanged(s_circuit, power):
 			turnOff()
 		else:
 			lowPower()
+
+
+func _on_Health_dead():
+	if source:
+		# Tell our wire to get rid of us
+		source.removeDependent()

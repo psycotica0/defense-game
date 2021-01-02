@@ -191,12 +191,12 @@ func setLegVisibility():
 	$Proposed/NegZ.visible = legs.negZ == LegState.PROPOSED
 
 func setDependent(klass, direction = Vector3.RIGHT):
-	if dependent:
-		if dependent is Generator:
-			# Don't allow people to change generators into other stuff
-			return
-		dependent.changeCircuit(null)
-		dependent.queue_free()
+	if dependent and dependent is Generator:
+		# Don't allow people to change generators into other stuff
+		return
+	
+	# Make sure if we have a dependent already we clean it up
+	removeDependent()
 	
 	dependent = klass.instance()
 	
@@ -209,6 +209,14 @@ func setDependent(klass, direction = Vector3.RIGHT):
 	add_child(dependent)
 	if circuit:
 		dependent.changeCircuit(circuit)
+
+func removeDependent():
+	# Don't allow people to remove generators
+	if dependent and not dependent is Generator:
+		dependent.changeCircuit(null)
+		dependent.queue_free()
+	
+	dependent = null
 
 func renderSwitchState():
 	$OpenSwitch.visible = switchState == SwitchState.OPEN

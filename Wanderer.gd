@@ -2,6 +2,7 @@ extends KinematicBody
 
 onready var scanner = $Scanner
 onready var anim = $AnimationPlayer
+onready var killBox = $KillBox
 
 enum State {
 	SCANNING,   # This is when it's wandering and looking for a nice place to walk next
@@ -9,6 +10,7 @@ enum State {
 	CHASING,    # This is when it sees a target and it's trying to get to it
 	HUNTING,    # This is when it had a target but lost it, and is going to the last place it saw it
 	LOOKING,    # This is when it's done hunting, and is seeing if the target is around
+	ATTACKING,  # This is when there's stuff in its kill box
 }
 
 var currentState
@@ -20,6 +22,7 @@ const WALK_SPEED = 2
 const TURN_RAD_PER_SEC = deg2rad(90)
 const RAD_EPSILON = deg2rad(5)
 const LOOK_ANGLE = deg2rad(70)
+const DAMAGE_PER_SEC = 20.0
 
 var rand = RandomNumberGenerator.new()
 var currentDestination
@@ -27,6 +30,8 @@ var currentTarget
 var look1
 var look2
 var lookState
+
+var attackTargets = {}
 
 func _ready():
 	changeState(State.SCANNING)
@@ -36,7 +41,9 @@ func changeState(newState):
 	if newState == currentState:
 		return
 	
-	prints("State is", State.keys()[newState])
+	currentState = newState
+	
+	prints("State is", State.keys()[currentState])
 	
 	match newState:
 		State.SCANNING:
@@ -81,8 +88,10 @@ func changeState(newState):
 				look2 = LOOK_ANGLE
 			lookState = 1
 			anim.play("Looking")
-	
-	currentState = newState
+		State.ATTACKING:
+			currentDestination = null
+			currentTarget = null
+			anim.play("Chasing")
 
 func _physics_process(delta):
 	match currentState:
@@ -96,6 +105,8 @@ func _physics_process(delta):
 			process_hunting(delta)
 		State.LOOKING:
 			process_looking(delta)
+		State.ATTACKING:
+			process_attacking(delta)
 	pass
 
 func process_scanning(_delta):
@@ -190,8 +201,12 @@ func process_looking(delta):
 				# So we must have seen nothing
 				changeState(State.SCANNING)
 
+func process_attacking(delta):
+	for f in attackTargets:
+		attackTargets[f].receiveDamage(DAMAGE_PER_SEC * delta)
+
 func _on_Vision_vision_entered(body):
-	if not currentTarget:
+	if not currentTarget and currentState != State.ATTACKING:
 		currentTarget = body
 		changeState(State.CHASING)
 
@@ -201,3 +216,22 @@ func _on_Vision_vision_exited(body):
 			changeState(State.HUNTING)
 		else:
 			currentTarget = $Vision.visibleBodies().front()
+
+func _on_KillBox_body_entered(body):
+	if body.has_method("receiveDamage"):
+		attackTargets[body] = body
+	elif body.has_node("Health"):
+		attackTargets[body] = body.get_node("Health")
+	
+	if not attackTargets.empty():
+		changeState(State.ATTACKING)
+
+func _on_KillBox_body_exited(body):
+	attackTargets.erase(body)
+	
+	if attackTargets.empty() and currentState == State.ATTACKING:
+		if $Vision.visibleBodies().empty():
+			changeState(State.LOOKING)
+		else:
+			currentTarget = $Vision.visibleBodies().front()
+			changeState(State.CHASING)
