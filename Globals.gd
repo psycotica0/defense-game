@@ -7,6 +7,7 @@ const PLAYER_LAYER = 1 << 0
 const WIRES_LAYER = 1 << 1
 const SHIELD_LAYER = 1 << 2
 const WALLS_LAYER = 1 << 3
+const ENEMIES_LAYER = 1 << 4
 
 
 # ------------------------------------
