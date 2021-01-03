@@ -137,6 +137,9 @@ func process_walking(delta):
 func walkTowards(delta, point, speedFactor):
 	var vect = point - global_transform.origin
 	
+	# We should try to always stay on the same plane, no matter the target's relative position
+	vect.y = 0
+	
 	# Eventually I'll probably want some kind of "stuck" detection
 	if vect.length_squared() < 1:
 		return true
