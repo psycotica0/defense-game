@@ -1,9 +1,10 @@
-extends Spatial
+extends StaticBody
 
 const shieldScene = preload("res://Shield.tscn")
 
 onready var shieldSpawn = $ShieldSpawn
 onready var heat = $Heat
+onready var health = $Health
 
 var shield
 var direction
@@ -52,6 +53,9 @@ func enable():
 			shield.transform = shieldSpawn.global_transform
 			shield.addEmitter(self)
 			get_tree().root.add_child(shield)
+		# We don't take damage while the shield is up
+		# The shield takes damage, which is passed to us as heat
+		health.invulnerable = true
 
 func disable():
 	if shield:
@@ -59,6 +63,7 @@ func disable():
 		shield.splitShield()
 		shield = null
 		shieldPiece = null
+		health.invulnerable = false
 
 func setDirection(dir):
 	direction = dir
@@ -84,6 +89,7 @@ func changeCircuit(newCircuit):
 			oldCircuit.disconnect("power_updated", self, "circuitPowerChanged")
 			oldCircuit.removeSink(self)
 	heat.changeCircuit(circuit)
+	health.changeCircuit(circuit)
 
 func shieldDamage(damage):
 	heat.heat(damage)
@@ -96,3 +102,8 @@ func _on_Heat_state_change(state):
 			changeState(State.ON)
 		else:
 			changeState(State.OFF)
+
+func _on_Health_dead():
+	if source:
+		# Tell our wire to get rid of us
+		source.removeDependent()

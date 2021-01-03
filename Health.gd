@@ -2,11 +2,11 @@ extends Node
 
 class_name Health
 
-const MAX_HEALTH = 100.0
-const HEAL_PER_SEC = 10
+export var max_health = 100.0
+export var healing_rate = 10
 const ENERGY_TO_HEAL = 10
 
-export var health = MAX_HEALTH
+var health = max_health
 var reportedHealth = health
 
 var demand = 0
@@ -18,6 +18,9 @@ var circuit
 var currentState
 
 enum State {FULL, DAMAGED, CHARGING, DEAD}
+
+# When this is set, the system does its normal thing, but no new damage comes in
+var invulnerable = false
 
 signal health_changed(health)
 signal dead()
@@ -31,7 +34,7 @@ func changeState(newState):
 	
 	match newState:
 		State.FULL:
-			health = MAX_HEALTH
+			health = max_health
 			updateDemand(0)
 		State.DAMAGED:
 			# It's important demand doesn't change here
@@ -76,7 +79,7 @@ func circuitPowerChanged(s_circuit, power):
 func _physics_process(delta):
 	match currentState:
 		State.FULL:
-			if health < MAX_HEALTH:
+			if health < max_health:
 				if circuit and circuit.power > 0:
 					changeState(State.CHARGING)
 				else:
@@ -85,11 +88,11 @@ func _physics_process(delta):
 			if health <= 0:
 				changeState(State.DEAD)
 		State.CHARGING:
-			health += HEAL_PER_SEC * delta
+			health += healing_rate * delta
 			
 			if health <= 0:
 				changeState(State.DEAD)
-			elif health >= 100:
+			elif health >= max_health:
 				changeState(State.FULL)
 		State.DEAD:
 			pass
@@ -107,4 +110,5 @@ func updateDemand(d):
 		circuit.call_deferred("updateDemand")
 
 func receiveDamage(d):
-	health -= d
+	if not invulnerable:
+		health -= d
