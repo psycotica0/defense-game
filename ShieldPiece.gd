@@ -1,8 +1,6 @@
-extends Spatial
+extends StaticBody
 
 class_name ShieldPiece
-
-onready var collisionBody = $StaticBody
 
 enum Spot { POSX, NEGX, POSZ, NEGZ}
 
@@ -39,8 +37,8 @@ func getNeighbours():
 		to_global(Vector3(-5,0,0)),
 	]
 	
-	var results = querySpots(get_world(), points, collisionBody)
-	
+	var results = querySpots(get_world(), points, self)
+
 	for r in results:
 		if r and r.has_method("addConnection"):
 			addConnection(r)
@@ -69,10 +67,7 @@ static func querySpots(world, global_points, exclude = null):
 		# For now, though, just do the dumb thing and let it return the last thing
 		for i in space.intersect_shape(query):
 			if not exclude or i.collider != exclude:
-				if i.collider.get_parent().has_method("addConnection"):
-					thing = i.collider.get_parent()
-				else:
-					thing = i.collider
+				thing = i.collider
 		
 		return_array.push_back(thing)
 	
