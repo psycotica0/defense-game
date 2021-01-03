@@ -12,19 +12,21 @@ var scanOrder = []
 onready var gunHolder = $"Gun Holder"
 onready var happyLaser = $"Gun Holder/Barrel/Laser"
 onready var sadLaser = $"Gun Holder/Barrel/SadLaser"
+onready var heat = $Heat
 onready var laser = sadLaser
 
 var source
 var circuit
+
+const BASE_DEMAND = 15
+const FIRING_DEMAND = 5 # This is on top of base
+
 var demand = 15
 
 var currentTarget
 var currentState = State.OFF
 
-var heat = 0
-var maxHeat = 20
 var heatRate = 30
-var ventRate = 20
 
 enum State {OFF, SCANNING, TARGETTING, FIRING, VENTING}
 
@@ -38,11 +40,13 @@ func changeCircuit(newCircuit):
 	if circuit:
 		circuit.connect("power_updated", self, "circuitPowerChanged")
 		circuit.addSink(self)
+		heat.changeCircuit(circuit)
 	else:
 		changeState(State.OFF)
 		if oldCircuit:
 			oldCircuit.disconnect("power_updated", self, "circuitPowerChanged")
 			oldCircuit.removeSink(self)
+		heat.changeCircuit(circuit)
 
 func changeState(newState):
 	match newState:
@@ -50,25 +54,19 @@ func changeState(newState):
 			laser.visible = false
 			currentTarget = null
 			gunHolder.rotation.x = deg2rad(-20)
-			if demand != 15:
-				demand = 15
-				circuit.call_deferred("updateDemand")
+			updateDemand(BASE_DEMAND)
 			for ray in scanOrder:
 				ray.enabled = false
 		State.SCANNING:
 			laser.visible = false
 			currentTarget = null
 			gunHolder.rotation.x = 0
-			if demand != 15:
-				demand = 15
-				circuit.call_deferred("updateDemand")
+			updateDemand(BASE_DEMAND)
 			for ray in scanOrder:
 				ray.enabled = true
 		State.TARGETTING, State.FIRING:
 			laser.visible = false
-			if demand != 25:
-				demand = 25
-				circuit.call_deferred("updateDemand")
+			updateDemand(BASE_DEMAND + FIRING_DEMAND)
 			for ray in scanOrder:
 				ray.enabled = true
 	currentState = newState
@@ -98,21 +96,15 @@ func _physics_process(delta):
 			processFiring(delta)
 		State.VENTING:
 			processVenting(delta)
-	
-	heat -= ventRate * delta
-	if heat < 0:
-		heat = 0
 
 func becomeSad():
 	happyLaser.visible = false
 	laser = sadLaser
-	ventRate = 10
 	changeState(currentState)
 
 func becomeHappy():
 	sadLaser.visible = false
 	laser = happyLaser
-	ventRate = 20
 	changeState(currentState)
 
 func processFiring(delta):
@@ -120,8 +112,6 @@ func processFiring(delta):
 		changeState(State.SCANNING)
 	elif barrelCast.get_collider() != currentTarget:
 		changeState(State.TARGETTING)
-	elif heat >= maxHeat:
-		changeState(State.VENTING)
 	else:
 		# Keep us pointed at the center of our target
 		gunHolder.look_at(currentTarget.getAimTarget(), -source.normal)
@@ -129,12 +119,11 @@ func processFiring(delta):
 		laser.visible = true
 		laser.mesh.height = distance
 		laser.translation.y = -(distance / 2) + 2.5
-		heat += heatRate * delta
+		heat.heat(heatRate * delta)
 
 func processVenting(_delta):
-	if heat == 0:
-		changeState(State.FIRING)
 	# We cool down in all states, so there's nothing to do here but wait
+	pass
 
 func processTargetting(_delta):
 	if not currentTarget:
@@ -151,6 +140,14 @@ func processTargetting(_delta):
 		if not targetted:
 			changeState(State.SCANNING)
 
+func updateDemand(newDemand):
+	if newDemand == demand:
+		return
+	
+	demand = newDemand
+	if circuit:
+		circuit.call_deferred("updateDemand")
+
 func processScanning(delta):
 	for ray in scanOrder:
 		var obj = ray.get_collider()
@@ -161,3 +158,9 @@ func processScanning(delta):
 	
 	# Continue to scan
 	gunHolder.rotate_y((SCAN_RPM / 60.0) * TAU * delta)
+
+func _on_Heat_state_change(state):
+	if state == Heat.State.VENTING:
+		changeState(State.VENTING)
+	elif currentState == State.VENTING:
+		changeState(State.FIRING)

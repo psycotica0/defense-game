@@ -1,6 +1,7 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Turret.gd" type="Script" id=1]
+[ext_resource path="res://Heat.gd" type="Script" id=2]
 
 [sub_resource type="CapsuleMesh" id=1]
 radius = 4.0
@@ -78,3 +79,10 @@ cast_to = Vector3( 0, 0, -20 )
 [node name="BelowCast" type="RayCast" parent="Gun Holder"]
 transform = Transform( 1, 0, 0, 0, 0.866025, -0.5, 0, 0.5, 0.866025, 0, 0, 0 )
 cast_to = Vector3( 0, 0, -20 )
+
+[node name="Heat" type="Node" parent="."]
+script = ExtResource( 2 )
+max_heat = 20.0
+passive_cool_rate = 10.0
+active_cool_rate = 20.0
+[connection signal="state_change" from="Heat" to="." method="_on_Heat_state_change"]
