@@ -98,3 +98,13 @@ func addEmitter(emitter):
 
 func removeEmitter(emitter):
 	emitters.erase(emitter)
+
+func receiveDamage(damage):
+	# There is a race condition where I turn a shield off while it's being attacked
+	# If so, ignore the damage and just don't crash
+	if emitters.empty():
+		return
+	
+	var damagePer = damage / emitters.size()
+	for e in emitters:
+		e.shieldDamage(damagePer)

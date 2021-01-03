@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://ShieldGenerator.gd" type="Script" id=1]
+[ext_resource path="res://Heat.gd" type="Script" id=2]
 
 [sub_resource type="CapsuleMesh" id=1]
 mid_height = 5.0
@@ -36,3 +37,8 @@ material/0 = null
 
 [node name="ShieldSpawn" type="Spatial" parent="."]
 transform = Transform( 1, 0, 0, 0, -1.62921e-07, -1, 0, 1, -1.62921e-07, 0, 5, 0 )
+
+[node name="Heat" type="Node" parent="."]
+script = ExtResource( 2 )
+max_heat = 50.0
+[connection signal="state_change" from="Heat" to="." method="_on_Heat_state_change"]

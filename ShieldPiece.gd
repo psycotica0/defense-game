@@ -85,3 +85,6 @@ func trace(emitters):
 func addConnection(c):
 	if not connections.has(c):
 		connections.push_back(c)
+
+func receiveDamage(damage):
+	shield.receiveDamage(damage)

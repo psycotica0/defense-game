@@ -3,6 +3,7 @@ extends Spatial
 const shieldScene = preload("res://Shield.tscn")
 
 onready var shieldSpawn = $ShieldSpawn
+onready var heat = $Heat
 
 var shield
 var direction
@@ -11,6 +12,9 @@ var source
 var circuit
 var demand = 10
 
+enum State {OFF, ON, VENTING}
+var currentState
+
 # This is a convenient access point used when tracing connectivity, while splitting shields
 # This value only means something when the emitter is on, and also shield pieces are thrown out pretty often
 var shieldPiece
@@ -18,6 +22,19 @@ var shieldPiece
 func _ready():
 	# Rotate ourselves so our positive Z is pointing in the way the player is facing
 	look_at(global_transform.origin - direction, source.normal)
+	changeState(State.OFF)
+
+func changeState(newState):
+	if currentState == newState:
+		return
+	
+	currentState = newState
+	
+	match currentState:
+		State.OFF, State.VENTING:
+			disable()
+		State.ON:
+			enable()
 
 func enable():
 	if not shield:
@@ -48,13 +65,12 @@ func setDirection(dir):
 
 func circuitPowerChanged(s_circuit, power):
 	# I don't know how async signals are, so I'll make sure nothing changed here
-	if circuit == s_circuit:
-		if power > 0:
-			enable()
-		elif circuit.capacity == 0:
-			disable()
+	# Also, if we're venting then power status doesn't matter, we're off either way
+	if circuit == s_circuit and currentState != State.VENTING:
+		if circuit.capacity == 0:
+			changeState(State.OFF)
 		else:
-			enable()
+			changeState(State.ON)
 
 func changeCircuit(newCircuit):
 	var oldCircuit = circuit
@@ -63,7 +79,20 @@ func changeCircuit(newCircuit):
 		circuit.connect("power_updated", self, "circuitPowerChanged")
 		circuit.addSink(self)
 	else:
-		disable()
+		changeState(State.OFF)
 		if oldCircuit:
 			oldCircuit.disconnect("power_updated", self, "circuitPowerChanged")
 			oldCircuit.removeSink(self)
+	heat.changeCircuit(circuit)
+
+func shieldDamage(damage):
+	heat.heat(damage)
+
+func _on_Heat_state_change(state):
+	if state == Heat.State.VENTING:
+		changeState(State.VENTING)
+	elif currentState == State.VENTING:
+		if circuit and circuit.capacity > 0:
+			changeState(State.ON)
+		else:
+			changeState(State.OFF)
