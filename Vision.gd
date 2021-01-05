@@ -73,6 +73,8 @@ func physics_process(_delta):
 	for b in bodies:
 		var s = bodies[b]
 		var p = b.global_transform.origin
+		if b.has_method("getAimTarget"):
+			p = b.getAimTarget()
 		
 		if pointInWedge(p):
 			if pointVisible(p):
@@ -111,9 +113,6 @@ func pointInWedge(point):
 
 func pointVisible(point):
 	var state = get_world().direct_space_state
-	# I was running into a problem where the origin was near the ground and clipping through the floor when at a distance
-	# So, this isn't great because it means the vision could just shoot over someone's head, but basically always scan at the middle of the cone
-	point.y = global_transform.origin.y
 	var ray_result = state.intersect_ray(global_transform.origin, point, [], Globals.WALLS_LAYER | collision_mask)
 	if ray_result and ray_result.collider:
 		if ray_result.collider.collision_layer & collision_mask:

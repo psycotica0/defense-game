@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://Turret.gd" type="Script" id=1]
 [ext_resource path="res://Heat.gd" type="Script" id=2]
+[ext_resource path="res://Vision.tscn" type="PackedScene" id=3]
 
 [sub_resource type="CapsuleMesh" id=1]
 radius = 4.0
@@ -48,10 +49,17 @@ mesh = SubResource( 1 )
 material/0 = null
 
 [node name="Gun Holder" type="Spatial" parent="."]
-transform = Transform( 1, 0, 0, 0, -1, -3.25841e-07, 0, 3.25841e-07, -1, 0, 2.70826, 1.79624e-08 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.70826, 1.79624e-08 )
+
+[node name="Vision" parent="Gun Holder" instance=ExtResource( 3 )]
+transform = Transform( -1, 0, 3.25841e-07, 0, 1, 0, -3.25841e-07, 0, -1, 0, 5, -7.54979e-07 )
+height = 20.0
+angle = 20.0
+length = 20.0
+collision_mask = 17
 
 [node name="Barrel" type="MeshInstance" parent="Gun Holder"]
-transform = Transform( 1, 0, 0, 0, -1.62921e-07, -1, 0, 1, -1.62921e-07, 0, 0, -2.5 )
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -2.5 )
 mesh = SubResource( 2 )
 material/0 = null
 
@@ -65,24 +73,11 @@ transform = Transform( 1, 0, 0, 0, 1, 1.1921e-07, 0, -1.1921e-07, 1, 0, 0, 0 )
 mesh = SubResource( 6 )
 material/0 = null
 
-[node name="BarrelCast" type="RayCast" parent="Gun Holder"]
-cast_to = Vector3( 0, 0, -20 )
-
-[node name="AboveCast" type="RayCast" parent="Gun Holder"]
-transform = Transform( 1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 0, 0 )
-cast_to = Vector3( 0, 0, -20 )
-
-[node name="TopCast" type="RayCast" parent="Gun Holder"]
-transform = Transform( 1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 0, 0 )
-cast_to = Vector3( 0, 0, -20 )
-
-[node name="BelowCast" type="RayCast" parent="Gun Holder"]
-transform = Transform( 1, 0, 0, 0, 0.866025, -0.5, 0, 0.5, 0.866025, 0, 0, 0 )
-cast_to = Vector3( 0, 0, -20 )
-
 [node name="Heat" type="Node" parent="."]
 script = ExtResource( 2 )
 max_heat = 20.0
 passive_cool_rate = 10.0
 active_cool_rate = 20.0
+[connection signal="vision_entered" from="Gun Holder/Vision" to="." method="_on_Vision_vision_entered"]
+[connection signal="vision_exited" from="Gun Holder/Vision" to="." method="_on_Vision_vision_exited"]
 [connection signal="state_change" from="Heat" to="." method="_on_Heat_state_change"]

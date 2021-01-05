@@ -2,16 +2,10 @@ extends Spatial
 
 const SCAN_RPM = 60.0 / 5.0
 
-onready var barrelCast = $"Gun Holder/BarrelCast"
-onready var aboveCast = $"Gun Holder/AboveCast"
-onready var topCast = $"Gun Holder/TopCast"
-onready var belowCast = $"Gun Holder/BelowCast"
-
-var scanOrder = []
-
 onready var gunHolder = $"Gun Holder"
 onready var happyLaser = $"Gun Holder/Barrel/Laser"
 onready var sadLaser = $"Gun Holder/Barrel/SadLaser"
+onready var vision = $"Gun Holder/Vision"
 onready var heat = $Heat
 onready var laser = sadLaser
 
@@ -28,10 +22,9 @@ var currentState = State.OFF
 
 var heatRate = 30
 
-enum State {OFF, SCANNING, TARGETTING, FIRING, VENTING}
+enum State {OFF, SCANNING, FIRING, VENTING}
 
 func _ready():
-	scanOrder = [barrelCast, aboveCast, belowCast, topCast]
 	changeState(State.OFF)
 
 func changeCircuit(newCircuit):
@@ -49,27 +42,29 @@ func changeCircuit(newCircuit):
 		heat.changeCircuit(circuit)
 
 func changeState(newState):
+	currentState = newState
 	match newState:
 		State.OFF, State.VENTING:
 			laser.visible = false
 			currentTarget = null
 			gunHolder.rotation.x = deg2rad(-20)
 			updateDemand(BASE_DEMAND)
-			for ray in scanOrder:
-				ray.enabled = false
 		State.SCANNING:
-			laser.visible = false
 			currentTarget = null
-			gunHolder.rotation.x = 0
-			updateDemand(BASE_DEMAND)
-			for ray in scanOrder:
-				ray.enabled = true
-		State.TARGETTING, State.FIRING:
+			for b in vision.visibleBodies():
+				if b.has_method("getAimTarget"):
+					currentTarget = b
+					break
+			
+			if currentTarget:
+				changeState(State.FIRING)
+			else:
+				laser.visible = false
+				gunHolder.rotation.x = 0
+				updateDemand(BASE_DEMAND)
+		State.FIRING:
 			laser.visible = false
 			updateDemand(BASE_DEMAND + FIRING_DEMAND)
-			for ray in scanOrder:
-				ray.enabled = true
-	currentState = newState
 
 func circuitPowerChanged(s_circuit, power):
 	if s_circuit == circuit:
@@ -90,8 +85,6 @@ func _physics_process(delta):
 			pass
 		State.SCANNING:
 			processScanning(delta)
-		State.TARGETTING:
-			processTargetting(delta)
 		State.FIRING:
 			processFiring(delta)
 		State.VENTING:
@@ -110,35 +103,18 @@ func becomeHappy():
 func processFiring(delta):
 	if not currentTarget:
 		changeState(State.SCANNING)
-	elif barrelCast.get_collider() != currentTarget:
-		changeState(State.TARGETTING)
 	else:
 		# Keep us pointed at the center of our target
-		gunHolder.look_at(currentTarget.getAimTarget(), -source.normal)
+		gunHolder.look_at(currentTarget.getAimTarget(), source.normal)
 		var distance = gunHolder.global_transform.origin.distance_to(currentTarget.getAimTarget())
 		laser.visible = true
 		laser.mesh.height = distance
-		laser.translation.y = -(distance / 2) + 2.5
+		laser.translation.y = (distance / 2)
 		heat.heat(heatRate * delta)
 
 func processVenting(_delta):
 	# We cool down in all states, so there's nothing to do here but wait
 	pass
-
-func processTargetting(_delta):
-	if not currentTarget:
-		changeState(State.SCANNING)
-	elif barrelCast.get_collider() == currentTarget:
-		changeState(State.FIRING)
-	else:
-		var targetted = false
-		for ray in scanOrder:
-			if ray.get_collider() == currentTarget:
-				gunHolder.look_at(currentTarget.getAimTarget(), -source.normal)
-				targetted = true
-				break
-		if not targetted:
-			changeState(State.SCANNING)
 
 func updateDemand(newDemand):
 	if newDemand == demand:
@@ -149,13 +125,6 @@ func updateDemand(newDemand):
 		circuit.call_deferred("updateDemand")
 
 func processScanning(delta):
-	for ray in scanOrder:
-		var obj = ray.get_collider()
-		if obj and obj.has_method("getAimTarget"):
-			currentTarget = obj
-			changeState(State.TARGETTING)
-			return
-	
 	# Continue to scan
 	gunHolder.rotate_y((SCAN_RPM / 60.0) * TAU * delta)
 
@@ -163,4 +132,17 @@ func _on_Heat_state_change(state):
 	if state == Heat.State.VENTING:
 		changeState(State.VENTING)
 	elif currentState == State.VENTING:
+		changeState(State.SCANNING)
+
+func _on_Vision_vision_entered(body):
+	# Only target targettable things
+	if not body.has_method("getAimTarget"):
+		return
+	
+	if currentState == State.SCANNING:
+		currentTarget = body
 		changeState(State.FIRING)
+
+func _on_Vision_vision_exited(body):
+	if body == currentTarget:
+		changeState(State.SCANNING)
