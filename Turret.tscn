@@ -5,7 +5,8 @@
 [ext_resource path="res://Vision.tscn" type="PackedScene" id=3]
 
 [sub_resource type="CapsuleMesh" id=1]
-radius = 4.0
+radius = 2.0
+mid_height = 4.0
 
 [sub_resource type="CylinderMesh" id=2]
 top_radius = 0.5

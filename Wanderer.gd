@@ -43,8 +43,6 @@ func changeState(newState):
 	
 	currentState = newState
 	
-	prints("State is", State.keys()[currentState])
-	
 	match newState:
 		State.SCANNING:
 			currentTarget = null
