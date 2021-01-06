@@ -238,3 +238,6 @@ func _on_KillBox_body_exited(body):
 		else:
 			currentTarget = $Vision.visibleBodies().front()
 			changeState(State.CHASING)
+
+func getAimTarget():
+	return $AimTarget.global_transform.origin

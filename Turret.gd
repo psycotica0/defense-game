@@ -109,7 +109,7 @@ func processFiring(delta):
 		var distance = gunHolder.global_transform.origin.distance_to(currentTarget.getAimTarget())
 		laser.visible = true
 		laser.mesh.height = distance
-		laser.translation.y = (distance / 2)
+		laser.translation.y = (distance / 2) - 2.5
 		heat.heat(heatRate * delta)
 
 func processVenting(_delta):
