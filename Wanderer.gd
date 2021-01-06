@@ -241,3 +241,6 @@ func _on_KillBox_body_exited(body):
 
 func getAimTarget():
 	return $AimTarget.global_transform.origin
+
+func _on_Health_dead():
+	queue_free()

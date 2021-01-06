@@ -1,7 +1,8 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://Wanderer.gd" type="Script" id=1]
 [ext_resource path="res://Vision.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Health.gd" type="Script" id=3]
 
 [sub_resource type="CapsuleMesh" id=1]
 mid_height = 7.0
@@ -179,7 +180,11 @@ shape = SubResource( 9 )
 
 [node name="AimTarget" type="Spatial" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.08568, 0 )
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource( 3 )
 [connection signal="vision_entered" from="Vision" to="." method="_on_Vision_vision_entered"]
 [connection signal="vision_exited" from="Vision" to="." method="_on_Vision_vision_exited"]
 [connection signal="body_entered" from="KillBox" to="." method="_on_KillBox_body_entered"]
 [connection signal="body_exited" from="KillBox" to="." method="_on_KillBox_body_exited"]
+[connection signal="dead" from="Health" to="." method="_on_Health_dead"]

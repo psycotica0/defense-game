@@ -14,10 +14,12 @@ var circuit
 
 const BASE_DEMAND = 15
 const FIRING_DEMAND = 5 # This is on top of base
+const LASER_DAMAGE = 20
 
 var demand = 15
 
 var currentTarget
+var currentTargetHealth
 var currentState = State.OFF
 
 var heatRate = 30
@@ -53,6 +55,11 @@ func changeState(newState):
 			currentTarget = null
 			for b in vision.visibleBodies():
 				if b.has_method("getAimTarget"):
+					var health = b.get_node("Health")
+					if health:
+						currentTargetHealth = health
+					else:
+						currentTargetHealth = b
 					currentTarget = b
 					break
 			
@@ -111,6 +118,7 @@ func processFiring(delta):
 		laser.mesh.height = distance
 		laser.translation.y = (distance / 2) - 2.5
 		heat.heat(heatRate * delta)
+		currentTargetHealth.receiveDamage(LASER_DAMAGE * delta)
 
 func processVenting(_delta):
 	# We cool down in all states, so there's nothing to do here but wait
@@ -140,6 +148,11 @@ func _on_Vision_vision_entered(body):
 		return
 	
 	if currentState == State.SCANNING:
+		var health = body.get_node("Health")
+		if health:
+			currentTargetHealth = health
+		else:
+			currentTargetHealth = body
 		currentTarget = body
 		changeState(State.FIRING)
 
