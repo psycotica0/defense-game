@@ -98,6 +98,11 @@ func toggle_switch(pos, normal):
 	if wire:
 		wire.toggleSwitch()
 
+func clear_wire(pos, normal):
+	var wire = allWires.get([pos, normal])
+	if wire:
+		wire.removeDependent()
+
 func addWire(pos, normal):
 	var existing = allWires.get([pos, normal])
 	if existing:

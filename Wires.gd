@@ -220,8 +220,7 @@ func removeDependent():
 	if dependent and not dependent is Generator:
 		dependent.changeCircuit(null)
 		dependent.queue_free()
-	
-	dependent = null
+		dependent = null
 
 func renderSwitchState():
 	$OpenSwitch.visible = switchState == SwitchState.OPEN
