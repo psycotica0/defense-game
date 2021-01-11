@@ -48,14 +48,19 @@ func setPosition(pos, norm):
 			translate(Vector3(0, 1, 0))
 		DOWN: # Ceiling
 			rotate_x(PI)
+			translate(Vector3(0, 1, 0))
 		LEFT: # This is wall
 			rotate_z(PI/2)
+			translate(Vector3(0, 2, 0))
 		RIGHT:
 			rotate_z(-PI/2)
+			translate(Vector3(0, 2, 0))
 		FORWARD:
 			rotate_x(-PI/2)
+			translate(Vector3(0, 2, 0))
 		BACK:
 			rotate_x(PI/2)
+			translate(Vector3(0, 2, 0))
 
 func startPropose():
 	$Proposed/Hub.visible = true
