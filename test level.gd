@@ -10,9 +10,26 @@ var maxCircuit = 1
 
 var allWires = {}
 var proposal = []
- 
+var tileState = {}
+var spawnableLocations = []
+
+class TileState:
+	var beacons = []
+	var shields = []
+	var wires = []
+	var players = []
+	var enemies = []
+	
+	func canSpawn():
+		return beacons.empty() and shields.empty() and wires.empty() and players.empty() and enemies.empty()
+
+func _enter_tree():
+	Globals.currentLevel = self
+	for f in $Floors2.get_used_cells():
+		tileState[f] = TileState.new()
+
 func _ready():
-	pass
+	updateSpawnLocations()
 
 func startWire():
 	proposal.clear()
@@ -40,6 +57,7 @@ func finishWire():
 	
 	proposal.clear()
 	splitCircuits(circuitsToSplit)
+	updateSpawnLocations()
 
 func splitCircuits(circuitsToSplit):
 	for c in circuitsToSplit:
@@ -113,8 +131,8 @@ func addWire(pos, normal):
 		var new_wires = wire_scene.instance()
 		new_wires.circuitManager = self
 		allWires[[pos, normal]] = new_wires
-		get_tree().root.add_child(new_wires)
 		new_wires.setPosition(pos, normal)
+		get_tree().root.add_child(new_wires)
 		return new_wires
 
 func newCircuit():
@@ -145,3 +163,29 @@ func initializeGenerator(generator):
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass
+
+func updateSpawnLocations():
+	spawnableLocations.clear()
+	for k in tileState:
+		if tileState[k].canSpawn():
+			spawnableLocations.push_back(k)
+	
+	visualizeSpawnLocations()
+
+func visualizeSpawnLocations():
+	for child in $SpawnableHolder.get_children():
+		$SpawnableHolder.remove_child(child)
+	
+	for p in spawnableLocations:
+		var fake = $SpawnableTemplate.duplicate()
+		fake.transform.origin = (p * 10) + Vector3(5,0,5)
+		$SpawnableHolder.add_child(fake)
+
+func getTileState(realPos):
+	# This drops the square until it gets to floor
+	for f in [0, 1, 2]:
+		var position = ((realPos - Vector3(5, 5, 5)) / 10).round() - Vector3(0, f, 0)
+		var state = tileState.get(position)
+		if state:
+			return state
+	return null

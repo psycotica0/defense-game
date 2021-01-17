@@ -9,6 +9,7 @@ var proposedConnections = []
 var proposedDeletions = []
 var connections = []
 var dependent
+var tileState
 
 enum SwitchState {NONE, OPEN, CLOSED}
 var switchState = SwitchState.NONE
@@ -37,6 +38,7 @@ func _ready():
 	$Proposed/Hub.visible = false
 	renderSwitchState()
 	setLegVisibility()
+	tileState = Globals.currentLevel.getTileState(global_transform.origin)
 
 func setPosition(pos, norm):
 	position = pos
@@ -259,6 +261,12 @@ func commitProposal():
 	proposedDeletions.clear()
 	
 	setLegVisibility()
+	
+	if is_trivial():
+		tileState.wires.erase(self)
+	else:
+		if not tileState.wires.has(self):
+			tileState.wires.push_back(self)
 	
 	if hadDeletions:
 		return circuit

@@ -60,6 +60,8 @@ var created_audio = []
 
 # ------------------------------------
 
+var currentLevel
+
 
 func _ready():
 	# Randomize the random number generator, so we get random values
