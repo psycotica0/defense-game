@@ -14,6 +14,8 @@ const ACCEL= 4.5
 # A vector for storing the direction the player intends to move towards.
 var dir = Vector3()
 
+var tileState
+
 # Sprinting variables. Similar to the varibles above for walking,
 # but these are used when sprinting (so they should be faster/higher)
 const MAX_SPRINT_SPEED = 30
@@ -170,6 +172,8 @@ func _ready():
 	# Get the mouse and joypad sensitivity
 	MOUSE_SENSITIVITY = globals.mouse_sensitivity
 	JOYPAD_SENSITIVITY = globals.joypad_sensitivity
+	tileState = Globals.currentLevel.getTileState(global_transform.origin)
+	tileState.players.push_back(self)
 
 
 func _physics_process(delta):
@@ -202,6 +206,13 @@ func _physics_process(delta):
 	
 	# Process respawning
 	process_respawn(delta)
+	
+	var newTile = Globals.currentLevel.getTileState(global_transform.origin)
+	if newTile != tileState:
+		tileState.players.erase(self)
+		newTile.players.push_back(self)
+		tileState = newTile
+		Globals.currentLevel.updateSpawnLocations()
 
 
 func process_input(delta):

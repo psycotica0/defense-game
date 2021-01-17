@@ -183,8 +183,8 @@ func visualizeSpawnLocations():
 
 func getTileState(realPos):
 	# This drops the square until it gets to floor
-	for f in [0, 1, 2]:
-		var position = ((realPos - Vector3(5, 5, 5)) / 10).round() - Vector3(0, f, 0)
+	for f in [0, 1, 2, 3]:
+		var position = ((realPos - Vector3(5, 0, 5)) / 10).round() - Vector3(0, f, 0)
 		var state = tileState.get(position)
 		if state:
 			return state
