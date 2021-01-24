@@ -425,6 +425,11 @@ func process_input(delta):
 		if target:
 			level.clear_wire(target[0], target[1])
 	
+	if Input.is_action_just_pressed("beacon"):
+		var target = getWirePos()
+		if target:
+			level.beacon(target[0], target[1])
+	
 	if Input.is_action_just_pressed("overdraw"):
 		var view = get_tree().root
 		if view.debug_draw == Viewport.DEBUG_DRAW_DISABLED:

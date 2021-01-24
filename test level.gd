@@ -5,6 +5,7 @@ var lamp_scene = preload("res://Lamp.tscn")
 var turret_scene = preload("res://Turret.tscn")
 var shield_scene = preload("res://ShieldGenerator.tscn")
 var generator_scene = preload("res://Generator.tscn")
+var beacon_scene = preload("res://Beacon.tscn")
 var circuits = {}
 var maxCircuit = 1
 
@@ -20,6 +21,8 @@ class TileState:
 	var players = []
 	var enemies = []
 	
+	var position
+	
 	func canSpawn():
 		return beacons.empty() and shields.empty() and wires.empty() and players.empty() and enemies.empty()
 
@@ -27,6 +30,7 @@ func _enter_tree():
 	Globals.currentLevel = self
 	for f in $Floors2.get_used_cells():
 		tileState[f] = TileState.new()
+		tileState[f].position = f
 
 func _ready():
 	updateSpawnLocations()
@@ -108,6 +112,11 @@ func turret(pos, normal):
 func shield(pos, normal, direction):
 	var wire = addWire(pos, normal)
 	wire.setDependent(shield_scene, direction)
+	wire.commitProposal()
+
+func beacon(pos, normal):
+	var wire = addWire(pos, normal)
+	wire.setDependent(beacon_scene)
 	wire.commitProposal()
 
 func toggle_switch(pos, normal):
