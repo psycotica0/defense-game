@@ -1,5 +1,7 @@
 extends KinematicBody
 
+const enemy_type = "wanderer"
+
 onready var scanner = $Scanner
 onready var anim = $AnimationPlayer
 onready var killBox = $KillBox
@@ -32,6 +34,12 @@ var look2
 var lookState
 
 var attackTargets = {}
+
+func _enter_tree():
+	Globals.currentLevel.enemies[enemy_type] += 1
+
+func _exit_tree():
+	Globals.currentLevel.enemies[enemy_type] -= 1
 
 func _ready():
 	changeState(State.SCANNING)

@@ -13,6 +13,9 @@ var allWires = {}
 var proposal = []
 var tileState = {}
 var spawnableLocations = []
+var enemies = {
+	"wanderer": 0,
+}
 
 class TileState:
 	var beacons = []
@@ -28,6 +31,7 @@ class TileState:
 
 func _enter_tree():
 	Globals.currentLevel = self
+	$Mastermind.level = self
 	for f in $Floors2.get_used_cells():
 		tileState[f] = TileState.new()
 		tileState[f].position = f
