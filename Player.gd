@@ -363,6 +363,9 @@ func process_input(delta):
 	# ----------------------------------
 	# Firing the weapons
 	if Input.is_action_pressed("fire"):
+		var target = getWirePos()
+		if target:
+			get_parent().get_node("Navigation/BaseRobot").move_to(target[0]*10 + Vector3(5,5,5))
 		# Make sure we are not trying to reload or change weapons.
 		if reloading_weapon == false:
 			if changing_weapon == false:

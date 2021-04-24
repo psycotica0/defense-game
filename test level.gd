@@ -32,7 +32,7 @@ class TileState:
 func _enter_tree():
 	Globals.currentLevel = self
 	$Mastermind.level = self
-	for f in $Floors2.get_used_cells():
+	for f in $Navigation/NavigationMeshInstance/Floors2.get_used_cells():
 		tileState[f] = TileState.new()
 		tileState[f].position = f
 
