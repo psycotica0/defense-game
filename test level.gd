@@ -39,9 +39,9 @@ func _enter_tree():
 
 func _ready():
 	updateSpawnLocations()
-	var rod = $Navigation/ControlRod
-	var tile = getTileState(rod.global_transform.origin)
-	tile.controlRods.append(rod)
+	for rod in [$Navigation/ControlRod, $Navigation/ControlRod2]:
+		var tile = getTileState(rod.global_transform.origin)
+		tile.controlRods.append(rod)
 
 func startWire():
 	proposal.clear()
