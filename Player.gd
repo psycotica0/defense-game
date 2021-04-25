@@ -363,11 +363,6 @@ func process_input(delta):
 	# ----------------------------------
 	# Firing the weapons
 	if Input.is_action_pressed("fire"):
-		var target = getWirePos()
-		if target:
-			var rod = get_parent().get_node("Navigation/ControlRod")
-			rod.clicked(target[0], target[2])
-			# get_parent().get_node("Navigation/BaseRobot").move_to(target[0]*10 + Vector3(5,5,5))
 		# Make sure we are not trying to reload or change weapons.
 		if reloading_weapon == false:
 			if changing_weapon == false:
@@ -491,6 +486,10 @@ func process_input(delta):
 	# We could make a grab action, but because our UNARMED 'weapon' does nothing with fire anyway, we'll just use
 	# the fire action to avoid making another action.
 	if Input.is_action_just_pressed("fire") and current_weapon_name == "UNARMED":
+		var target = getWirePos()
+		if target:
+			var rod = get_parent().get_node("Navigation/ControlRod")
+			rod.clicked(target[0], target[2])
 		# If we are not holding a object...
 		if grabbed_object == null:
 			# Get the direct space state so we can raycast into the world.

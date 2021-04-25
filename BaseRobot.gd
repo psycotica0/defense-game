@@ -16,7 +16,7 @@ enum STATE {DEPLOYED, PACKING, PACKED, MOVING, DEPLOYING}
 var state = STATE.PACKED
 
 func _ready():
-	pass
+	changeState(STATE.DEPLOYING)
  
 func _physics_process(delta):
 	match state:
@@ -28,8 +28,6 @@ func _physics_process(delta):
 		STATE.PACKED:
 			if path_ind < path.size():
 				changeState(STATE.MOVING)
-			else:
-				changeState(STATE.DEPLOYING)
 		STATE.MOVING:
 			process_moving(delta)
 
