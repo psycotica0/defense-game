@@ -36,20 +36,28 @@ func _physics_process(delta):
 func process_moving(delta):
 	# As of 3.2 Vector3 doesn't have the ability to get a signed angle between things
 	# So instead we make 2D versions and use that
-	var relative = to_local(global_transform.origin + target_orientation)
+	var relative
+	
+	# If we have a point we're going, turn towards it
+	# If not, turn towards our final orientation
+	if path_ind < path.size():
+		relative = to_local(path[path_ind])
+	else:
+		relative = to_local(global_transform.origin + target_orientation)
+	
 	var relative2d = Vector2(relative.x, relative.z)
 	var angle = Vector2(0, 1).angle_to(relative2d)
 
-	if path_ind < path.size():
+	if angle < -TURN_RAD_PER_SEC * delta:
+		rotate_y(TURN_RAD_PER_SEC * delta)
+	elif angle > TURN_RAD_PER_SEC * delta:
+		rotate_y(-TURN_RAD_PER_SEC * delta)
+	elif path_ind < path.size():
 		var move_vec = (path[path_ind] - global_transform.origin)
 		if move_vec.length() < 0.1:
 			path_ind += 1
 		else:
 			move_and_slide(move_vec.normalized() * move_speed, Vector3(0, 1, 0))
-	elif angle < -TURN_RAD_PER_SEC * delta:
-		rotate_y(TURN_RAD_PER_SEC * delta)
-	elif angle > TURN_RAD_PER_SEC * delta:
-		rotate_y(-TURN_RAD_PER_SEC * delta)
 	else:
 		rotate_y(angle)
 		changeState(STATE.DEPLOYING)
