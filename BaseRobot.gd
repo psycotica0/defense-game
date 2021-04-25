@@ -1,4 +1,5 @@
 extends KinematicBody
+class_name BaseRobot
 
 # Borrowed from https://www.youtube.com/watch?v=_urHlep2P84
 
@@ -29,7 +30,7 @@ func _physics_process(delta):
 				changeState(STATE.DEPLOYING)
 		STATE.MOVING:
 			process_moving(delta)
-	
+
 func process_moving(delta):
 	if path_ind < path.size():
 		var move_vec = (path[path_ind] - global_transform.origin)
