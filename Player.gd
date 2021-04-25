@@ -15,6 +15,7 @@ const ACCEL= 4.5
 var dir = Vector3()
 
 var tileState
+var heldRod
 
 # Sprinting variables. Similar to the varibles above for walking,
 # but these are used when sprinting (so they should be faster/higher)
@@ -488,8 +489,30 @@ func process_input(delta):
 	if Input.is_action_just_pressed("fire") and current_weapon_name == "UNARMED":
 		var target = getWirePos()
 		if target:
-			var rod = get_parent().get_node("Navigation/ControlRod")
-			rod.clicked(target[0], target[2])
+			var tile = level.getTileState(target[0] * 10 + Vector3(5,5,5))
+			if tile:
+				if heldRod and tile.controlRods.empty():
+					# Put the rod I'm holding on this tile
+					tile.controlRods.append(heldRod)
+					heldRod.global_transform.origin = tile.position * 10 + Vector3(5,0,5)
+					heldRod.look_at(heldRod.global_transform.origin - target[2], Vector3.UP)
+					heldRod.putDown()
+					heldRod = null
+				elif not heldRod and not tile.controlRods.empty():
+					# Pickup the rod from this tile
+					heldRod = tile.controlRods.pop_front()
+					heldRod.pickup()
+				elif heldRod and not tile.controlRods.empty():
+					# Put the rod I'm holding back where I found it
+					var orig_tile = level.getTileState(heldRod.global_transform.origin)
+					orig_tile.controlRods.append(heldRod)
+					heldRod.putDown()
+					
+					# Then pickup the one I'm pointing at
+					heldRod = tile.controlRods.pop_front()
+					heldRod.pickup()
+				#var rod = get_parent().get_node("Navigation/ControlRod")
+				#rod.clicked(target[0], target[2])
 		# If we are not holding a object...
 		if grabbed_object == null:
 			# Get the direct space state so we can raycast into the world.

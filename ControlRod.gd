@@ -27,10 +27,12 @@ func add_bot(target):
 	controlledBots.append(bot)
 
 func pickup():
+	$AnimationPlayer.play("Pickup")
 	for bot in controlledBots:
 		bot.bot.changeState(BaseRobot.STATE.PACKING)
 
 func putDown():
+	$AnimationPlayer.play("Placed")
 	for bot in controlledBots:
 		bot.bot.move_to(
 			to_global(10 * bot.offset),

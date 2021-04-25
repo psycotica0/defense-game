@@ -23,6 +23,7 @@ class TileState:
 	var wires = []
 	var players = []
 	var enemies = []
+	var controlRods = []
 	
 	var position
 	
@@ -38,6 +39,9 @@ func _enter_tree():
 
 func _ready():
 	updateSpawnLocations()
+	var rod = $Navigation/ControlRod
+	var tile = getTileState(rod.global_transform.origin)
+	tile.controlRods.append(rod)
 
 func startWire():
 	proposal.clear()
