@@ -366,7 +366,7 @@ func process_input(delta):
 		var target = getWirePos()
 		if target:
 			var rod = get_parent().get_node("Navigation/ControlRod")
-			rod.clicked(target[0])
+			rod.clicked(target[0], target[2])
 			# get_parent().get_node("Navigation/BaseRobot").move_to(target[0]*10 + Vector3(5,5,5))
 		# Make sure we are not trying to reload or change weapons.
 		if reloading_weapon == false:

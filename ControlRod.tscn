@@ -23,6 +23,6 @@ mesh = SubResource( 1 )
 material/0 = null
 
 [node name="Head" type="MeshInstance" parent="Spatial"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0.743518 )
 mesh = SubResource( 2 )
 material/0 = null
