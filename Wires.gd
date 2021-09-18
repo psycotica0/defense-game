@@ -33,6 +33,13 @@ var legs = {
 	"negX": LegState.NOTHING,
 }
 
+var legConnectivity = {
+	"posZ": true,
+	"negZ": true,
+	"posX": true,
+	"negX": true,
+}
+
 func _ready():
 	$Committed/Hub.visible = false
 	$Proposed/Hub.visible = false
@@ -175,16 +182,19 @@ func changeCircuit(newCircuit):
 
 # This one recurses through neighbours to spread our new circuit
 # It's used when there's a split to find the currently connected set
-func floodCircuit(newCircuit, fromTop = false):
-	match switchState:
-		SwitchState.NONE, SwitchState.CLOSED:
-			if circuit != newCircuit:
-				changeCircuit(newCircuit)
-				for c in connections:
-					c.floodCircuit(newCircuit)
-		SwitchState.OPEN:
-			if fromTop and circuit != newCircuit:
-				changeCircuit(newCircuit)
+func floodCircuit(newCircuit, fromWire):
+	if circuit == newCircuit or (fromWire and not legConnectivity[getDirection(fromWire)]):
+		# If we're already on this circuit, then we're done.
+		# Continuing would make a contant feedback loop.
+		# Also, if there is no other wire, then we're being given a circuit from
+		# the main loop, which means it didn't flood into us. We have to take those.
+		# Also, if we got flooded from a wire we are unswitched from, ignore it.
+		return
+	
+	changeCircuit(newCircuit)
+	for c in connections:
+		if legConnectivity[getDirection(c)]:
+			c.floodCircuit(newCircuit, self)
 
 func setLegVisibility():
 	$Committed/PosX.visible = legs.posX == LegState.COMMITTED
@@ -236,21 +246,11 @@ func commitProposal():
 		if not connections.has(p):
 			legs[getDirection(p)] = LegState.COMMITTED
 			connections.push_back(p)
-			if p.circuit and p.circuit != circuit and switchState != SwitchState.OPEN and p.switchState != SwitchState.OPEN:
-				# Our neightbour is a member of a circuit we are not
-				if circuit:
-					# We're already in a circuit, so this is a merge
-					circuitManager.merge(circuit, p.circuit)
-				else:
-					# We aren't in a circuit, so just join theirs
-					changeCircuit(p.circuit)
 	
 	proposedConnections.clear()
 	
-	if not circuit:
-		# If at the end of the above loop, I didn't end up in any circuits, just add a new one for myself
-		# It may end up getting merged right after my neighbour runs, but that's fine
-		changeCircuit(circuitManager.newCircuit())
+	# Run through my connections now to make sure circuits are all joined
+	processCircuitConnection()
 	
 	# Now deletions, perhaps undoing all the work we just did
 	for p in proposedDeletions:
@@ -273,23 +273,51 @@ func commitProposal():
 	else:
 		return null
 
+func setConnectivity(key, value):
+	legConnectivity[key] = value
+
+func processCircuitConnection():
+	for c in connections:
+		var dir = getDirection(c)
+		if legConnectivity[dir] and c.legConnectivity[c.getDirection(self)]:
+			if circuit and c.circuit:
+				# We're already in a circuit, so this is a merge
+				if circuit != c.circuit:
+					# Our neighbour is a member of a circuit we are not
+					circuitManager.merge(circuit, c.circuit)
+			elif c.circuit:
+				# We aren't in a circuit, so just join theirs
+				changeCircuit(c.circuit)
+		else:
+			if circuit == c.circuit:
+				# We're sharing a circuit with a thing that's disconnected from us
+				circuitManager.splitCircuits([circuit])
+				# This split will erase this circuit and fully recompute them
+				# So we're done now. It's all been traced, etc
+				return
+	
+	if not circuit:
+		# If at the end of the above loop, I didn't end up in any circuits, just add a new one for myself
+		changeCircuit(circuitManager.newCircuit())
+
 func toggleSwitch():
 	match switchState:
 		SwitchState.NONE, SwitchState.CLOSED:
 			switchState = SwitchState.OPEN
+			setConnectivity("posZ", false)
+			setConnectivity("negZ", false)
+			setConnectivity("posX", false)
+			setConnectivity("negX", false)
 		SwitchState.OPEN:
 			switchState = SwitchState.CLOSED
+			setConnectivity("posZ", true)
+			setConnectivity("negZ", true)
+			setConnectivity("posX", true)
+			setConnectivity("negX", true)
 	
 	renderSwitchState()
 	
-	if switchState == SwitchState.CLOSED:
-		# We've just closed the switch, so check if we've connected stuff
-		for c in connections:
-			if c.circuit != circuit:
-				circuitManager.merge(circuit, c.circuit)
-	else:
-		# We've just opened a closed switch, so split our circuit
-		circuitManager.splitCircuits([circuit])
+	processCircuitConnection()
 
 func is_trivial():
 	# I have nothing on me, and I'm not connected to anyone else

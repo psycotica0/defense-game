@@ -86,7 +86,7 @@ func splitCircuits(circuitsToSplit):
 				if not m.circuit:
 					# This hasn't been set by a previous flood, so it must
 					# be unconnected to anything we've seen so far
-					m.floodCircuit(newCircuit(), true)
+					m.floodCircuit(newCircuit(), null)
 			
 			# Now remove the old one, all its children are reassigned
 			circuits.erase(c.identifier)
