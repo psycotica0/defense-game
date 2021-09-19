@@ -233,6 +233,13 @@ func removeDependent():
 		dependent.changeCircuit(null)
 		dependent.queue_free()
 		dependent = null
+	
+	# All circuits without a dependent are closed
+	legConnectivity["posX"] = true
+	legConnectivity["posZ"] = true
+	legConnectivity["negX"] = true
+	legConnectivity["negZ"] = true
+	processCircuitConnection()
 
 func renderSwitchState():
 	$OpenSwitch.visible = switchState == SwitchState.OPEN

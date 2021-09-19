@@ -6,6 +6,7 @@ var turret_scene = preload("res://Turret.tscn")
 var shield_scene = preload("res://ShieldGenerator.tscn")
 var generator_scene = preload("res://Generator.tscn")
 var beacon_scene = preload("res://Beacon.tscn")
+var sensor_scene = preload("res://Sensor.tscn")
 var circuits = {}
 var maxCircuit = 1
 
@@ -116,6 +117,11 @@ func turret(pos, normal):
 func shield(pos, normal, direction):
 	var wire = addWire(pos, normal)
 	wire.setDependent(shield_scene, direction)
+	wire.commitProposal()
+
+func sensor(pos, normal, direction):
+	var wire = addWire(pos, normal)
+	wire.setDependent(sensor_scene, direction)
 	wire.commitProposal()
 
 func beacon(pos, normal):
