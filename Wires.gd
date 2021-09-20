@@ -139,6 +139,11 @@ func proposeConnection(otherWire):
 func connectionProposed(otherWire):
 	var leg = getDirection(otherWire)
 	
+	# At some point I should fix this for real
+	# For now I just don't want it to crash
+	if leg == null or otherWire.getDirection(self) == null:
+		return
+	
 	var cnxIndex = connections.find(otherWire)
 	var prpIndex = proposedConnections.find(otherWire)
 	var delIndex = proposedDeletions.find(otherWire)
@@ -286,7 +291,9 @@ func setConnectivity(key, value):
 func processCircuitConnection():
 	for c in connections:
 		var dir = getDirection(c)
-		if legConnectivity[dir] and c.legConnectivity[c.getDirection(self)]:
+		var otherDir = c.getDirection(self)
+		
+		if legConnectivity[dir] and c.legConnectivity[otherDir]:
 			if circuit and c.circuit:
 				# We're already in a circuit, so this is a merge
 				if circuit != c.circuit:
