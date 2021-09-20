@@ -109,7 +109,7 @@ const OBJECT_GRAB_DISTANCE = 7
 const OBJECT_GRAB_RAY_DISTANCE = 10
 
 # How far away we can put wires
-const WIRE_RANGE = 40
+const WIRE_RANGE = 100
 var level
 var is_wiring = false
 
@@ -386,13 +386,16 @@ func process_input(delta):
 		else:
 			flashlight.show()
 	# ----------------------------------
-	if Input.is_action_just_pressed("wire"):
+	
+	if Input.is_action_just_pressed("fire"):
+		if not is_wiring:
+			level.startWire()
+			is_wiring = true
+	
+	if Input.is_action_just_released("fire"):
 		if is_wiring:
 			level.finishWire()
 			is_wiring = false
-		else:
-			level.startWire()
-			is_wiring = true
 
 	if is_wiring:
 		var target = getWirePos()
