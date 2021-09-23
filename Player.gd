@@ -113,6 +113,8 @@ const WIRE_RANGE = 100
 var level
 var is_wiring = false
 
+var current_selection
+
 # Our globals script.
 # We need this for making sounds, and getting a respawn point
 var globals
@@ -386,6 +388,15 @@ func process_input(delta):
 		else:
 			flashlight.show()
 	# ----------------------------------
+	
+	if Input.is_action_pressed("selection"):
+		var target = getWirePos()
+		if target and target != current_selection:
+			current_selection = target
+			level.toggle_selection(current_selection[0], target[1])
+	
+	if Input.is_action_just_released("selection"):
+		current_selection = null
 	
 	if Input.is_action_just_pressed("fire"):
 		if not is_wiring:

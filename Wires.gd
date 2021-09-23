@@ -14,6 +14,8 @@ var tileState
 enum SwitchState {NONE, OPEN, CLOSED}
 var switchState = SwitchState.NONE
 
+var selected = false
+
 const OFFSET = Vector3(5, 5, 5)
 
 const UP = Vector3.UP
@@ -45,6 +47,7 @@ func _ready():
 	$Proposed/Hub.visible = false
 	renderSwitchState()
 	setLegVisibility()
+	renderSelectionState()
 	tileState = Globals.currentLevel.getTileState(global_transform.origin)
 
 func setPosition(pos, norm):
@@ -249,6 +252,28 @@ func removeDependent():
 func renderSwitchState():
 	$OpenSwitch.visible = switchState == SwitchState.OPEN
 	$ClosedSwitch.visible = switchState == SwitchState.CLOSED
+
+func renderSelectionState():
+	if selected:
+		$Selection/AnimationPlayer.play("Selected")
+	else:
+		$Selection/AnimationPlayer.play("Unselected")
+
+func select():
+	if not selected:
+		selected = true
+		renderSelectionState()
+
+func unselect():
+	if selected:
+		selected = false
+		renderSelectionState()
+
+func toggle_selection():
+	if selected:
+		unselect()
+	else:
+		select()
 
 func commitProposal():
 	$Committed/Hub.visible = true

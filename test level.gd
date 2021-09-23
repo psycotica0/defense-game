@@ -135,6 +135,11 @@ func toggle_switch(pos, normal):
 	if wire:
 		wire.toggleSwitch()
 
+func toggle_selection(pos, normal):
+	var wire = allWires.get([pos, normal])
+	if wire:
+		wire.toggle_selection()
+
 func clear_wire(pos, normal):
 	var wire = allWires.get([pos, normal])
 	if wire:
