@@ -9,6 +9,8 @@ var proposedConnections = []
 var proposedDeletions = []
 var connections = []
 var dependent
+var dependent_class
+var dependent_direction
 var tileState
 
 enum SwitchState {NONE, OPEN, CLOSED}
@@ -224,6 +226,8 @@ func setDependent(klass, direction = Vector3.RIGHT):
 	removeDependent()
 	
 	dependent = klass.instance()
+	dependent_class = klass
+	dependent_direction = direction
 	
 	dependent.transform = $MountPoint.transform
 	if dependent.has_method("setDirection"):
@@ -241,6 +245,8 @@ func removeDependent():
 		dependent.changeCircuit(null)
 		dependent.queue_free()
 		dependent = null
+		dependent_class = null
+		dependent_direction = null
 	
 	# All circuits without a dependent are closed
 	legConnectivity["posX"] = true

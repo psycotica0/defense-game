@@ -455,6 +455,13 @@ func process_input(delta):
 			view.debug_draw = Viewport.DEBUG_DRAW_OVERDRAW
 		else:
 			view.debug_draw = Viewport.DEBUG_DRAW_DISABLED
+	
+	if Input.is_action_just_pressed("save_blueprint"):
+		level.save_blueprint()
+	elif Input.is_action_just_pressed("play_blueprint"):
+		var target = getWirePos()
+		if target:
+			level.play_blueprint(target[0], target[1])
 
 	
 	# ----------------------------------

@@ -17,6 +17,8 @@ var spawnableLocations = []
 var enemies = {
 	"wanderer": 0,
 }
+var selection = {}
+var blueprint : Blueprint
 
 class TileState:
 	var beacons = []
@@ -138,7 +140,22 @@ func toggle_switch(pos, normal):
 func toggle_selection(pos, normal):
 	var wire = allWires.get([pos, normal])
 	if wire:
-		wire.toggle_selection()
+		if wire.selected:
+			selection.erase(wire)
+			wire.unselect()
+		else:
+			selection[wire] = true
+			wire.select()
+
+func save_blueprint():
+	blueprint = Blueprint.new(selection.keys())
+	for wire in selection.keys():
+		wire.unselect()
+	selection = {}
+
+func play_blueprint(position, _normal):
+	if blueprint:
+		blueprint.paste(position, funcref(self, "addWire"))
 
 func clear_wire(pos, normal):
 	var wire = allWires.get([pos, normal])
