@@ -7,6 +7,7 @@ var shield_scene = preload("res://ShieldGenerator.tscn")
 var generator_scene = preload("res://Generator.tscn")
 var beacon_scene = preload("res://Beacon.tscn")
 var sensor_scene = preload("res://Sensor.tscn")
+var blueprint_scene = preload("res://Blueprint.tscn")
 var circuits = {}
 var maxCircuit = 1
 
@@ -19,6 +20,7 @@ var enemies = {
 }
 var selection = {}
 var blueprint : Blueprint
+var blueprintViewport : Viewport
 
 class TileState:
 	var beacons = []
@@ -35,6 +37,9 @@ class TileState:
 func _enter_tree():
 	Globals.currentLevel = self
 	$Mastermind.level = self
+	blueprintViewport = Viewport.new()
+	blueprintViewport.world = World.new()
+	add_child(blueprintViewport)
 	for f in $Floors2.get_used_cells():
 		tileState[f] = TileState.new()
 		tileState[f].position = f
@@ -148,7 +153,11 @@ func toggle_selection(pos, normal):
 			wire.select()
 
 func save_blueprint():
-	blueprint = Blueprint.new(selection.keys())
+	if blueprint:
+		blueprintViewport.remove_child(blueprint)
+	blueprint = blueprint_scene.instance()
+	blueprintViewport.add_child(blueprint)
+	blueprint.ofWires(selection.keys())
 	for wire in selection.keys():
 		wire.unselect()
 	selection = {}
@@ -156,6 +165,19 @@ func save_blueprint():
 func play_blueprint(position, _normal):
 	if blueprint:
 		blueprint.paste(position, funcref(self, "addWire"))
+
+func suggest_blueprint(position, normal):
+	if blueprintViewport.is_a_parent_of(blueprint):
+		blueprintViewport.remove_child(blueprint)
+		add_child(blueprint)
+		blueprint.setPosition(position, normal)
+	else:
+		blueprint.setPosition(position, normal)
+	
+func end_suggestion():
+	if not blueprintViewport.is_a_parent_of(blueprint):
+		remove_child(blueprint)
+		blueprintViewport.add_child(blueprint)
 
 func clear_wire(pos, normal):
 	var wire = allWires.get([pos, normal])

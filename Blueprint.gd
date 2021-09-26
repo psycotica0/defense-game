@@ -1,5 +1,23 @@
-extends Object
+extends Spatial
 class_name Blueprint
+
+var position
+
+const OFFSET = Vector3(0, 0, 0)
+
+class CircuitManager:
+	var circuit = Circuit.new()
+	
+	func newCircuit():
+		return circuit
+	
+	func merge(_c1, _c2):
+		pass
+	
+	func splitCircuits(_cs):
+		pass
+
+const Wire = preload("res://Wires.tscn")
 
 class WirePrototype:
 	var position
@@ -16,13 +34,24 @@ class WirePrototype:
 			dependent = wire.dependent_class
 			dependent_direction = wire.dependent_direction
 	
+	func buildGhost(wire, manager):
+		var ghost = Wire.instance()
+		ghost.circuitManager = manager
+		for leg in wire.legConnectivity.keys():
+			if wire.legs[leg] == wire.LegState.COMMITTED:
+				ghost.legs[leg] = wire.LegState.COMMITTED
+		
+		return ghost
+	
 	func setDependent(wire):
 		if dependent:
 			wire.setDependent(dependent, dependent_direction)
 
 var allWires = []
+var ghosts = []
+var circuitManager = CircuitManager.new()
 
-func _init(wires):
+func ofWires(wires):
 	var bottomCorner = Vector3(INF, INF, INF)
 	var toPrototype = {}
 	for w in wires:
@@ -36,6 +65,12 @@ func _init(wires):
 		proto.position -= bottomCorner
 		allWires.push_back(proto)
 		toPrototype[w] = proto
+		
+		var ghost = proto.buildGhost(w, circuitManager)
+		add_child(ghost)
+		ghost.setPosition(proto.position, proto.normal)
+		ghost.select()
+		proto.setDependent(ghost)
 	
 	# Now turn connections into prototype connections
 	for w in wires:
@@ -63,3 +98,9 @@ func paste(location, getWire):
 	
 	for w in allWires:
 		w.setDependent(fromPrototype[w])
+
+func setPosition(pos, _normal):
+	position = pos
+	# normal = norm
+	var tile_position = pos * 10 + OFFSET
+	translation = tile_position

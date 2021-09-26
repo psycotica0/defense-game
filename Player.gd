@@ -113,6 +113,8 @@ const WIRE_RANGE = 100
 var level
 var is_wiring = false
 
+enum PlayerMode { NORMAL, BUILDING }
+var currentMode = PlayerMode.NORMAL
 var current_selection
 
 # Our globals script.
@@ -389,29 +391,47 @@ func process_input(delta):
 			flashlight.show()
 	# ----------------------------------
 	
-	if Input.is_action_pressed("selection"):
-		var target = getWirePos()
-		if target and target != current_selection:
-			current_selection = target
-			level.toggle_selection(current_selection[0], target[1])
-	
-	if Input.is_action_just_released("selection"):
-		current_selection = null
-	
-	if Input.is_action_just_pressed("fire"):
-		if not is_wiring:
-			level.startWire()
-			is_wiring = true
-	
-	if Input.is_action_just_released("fire"):
-		if is_wiring:
-			level.finishWire()
-			is_wiring = false
+	match currentMode:
+		PlayerMode.NORMAL:
+			if Input.is_action_pressed("selection"):
+				var target = getWirePos()
+				if target and target != current_selection:
+					current_selection = target
+					level.toggle_selection(current_selection[0], target[1])
+			
+			if Input.is_action_just_released("selection"):
+				current_selection = null
+			
+			if Input.is_action_just_pressed("fire"):
+				if not is_wiring:
+					level.startWire()
+					is_wiring = true
+			
+			if Input.is_action_just_released("fire"):
+				if is_wiring:
+					level.finishWire()
+					is_wiring = false
+		PlayerMode.BUILDING:
+			if Input.is_action_just_released("fire"):
+				var target = getWirePos()
+				if target:
+					level.play_blueprint(target[0], target[1])
+					level.end_suggestion()
+					currentMode = PlayerMode.NORMAL
+			
+			if Input.is_action_just_released("selection"):
+				currentMode = PlayerMode.NORMAL
+				level.end_suggestion()
 
 	if is_wiring:
 		var target = getWirePos()
 		if target:
 			level.wireStep(target[0], target[1])
+	
+	if currentMode == PlayerMode.BUILDING:
+		var target = getWirePos()
+		if target:
+			level.suggest_blueprint(target[0], target[1])
 	
 	# I just cut and paste this from above
 	if Input.is_action_just_pressed("lamp"):
@@ -459,10 +479,8 @@ func process_input(delta):
 	if Input.is_action_just_pressed("save_blueprint"):
 		level.save_blueprint()
 	elif Input.is_action_just_pressed("play_blueprint"):
-		var target = getWirePos()
-		if target:
-			level.play_blueprint(target[0], target[1])
-
+		currentMode = PlayerMode.BUILDING
+	
 	
 	# ----------------------------------
 	# Capturing the mouse.
