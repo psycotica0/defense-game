@@ -53,17 +53,17 @@ var ghosts = []
 var circuitManager = CircuitManager.new()
 
 func ofWires(wires):
-	var bottomCorner = Vector3(INF, INF, INF)
+	var centerOfMass = Vector3.ZERO
 	var toPrototype = {}
 	for w in wires:
-		bottomCorner.x = min(bottomCorner.x, w.position.x)
-		bottomCorner.y = min(bottomCorner.y, w.position.y)
-		bottomCorner.z = min(bottomCorner.z, w.position.z)
-		
+		centerOfMass += w.position
+	
+	centerOfMass /= wires.size()
+	centerOfMass = centerOfMass.snapped(Vector3(1,1,1))
 	for w in wires:
 		var proto = WirePrototype.new()
 		proto.fromWire(w)
-		proto.position -= bottomCorner
+		proto.position -= centerOfMass
 		allWires.push_back(proto)
 		toPrototype[w] = proto
 		
