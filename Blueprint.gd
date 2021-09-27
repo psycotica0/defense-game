@@ -25,6 +25,7 @@ class WirePrototype:
 	var connections = []
 	var dependent
 	var dependent_direction
+	var ghost
 	
 	func fromWire(wire):
 		position = wire.position
@@ -35,7 +36,7 @@ class WirePrototype:
 			dependent_direction = wire.dependent_direction
 	
 	func buildGhost(wire, manager):
-		var ghost = Wire.instance()
+		ghost = Wire.instance()
 		ghost.circuitManager = manager
 		for leg in wire.legConnectivity.keys():
 			if wire.legs[leg] == wire.LegState.COMMITTED:
@@ -80,10 +81,10 @@ func ofWires(wires):
 			if other:
 				proto.connections.push_back(other)
 
-func paste(location, getWire):
+func paste(getWire):
 	var fromPrototype = {}
 	for w in allWires:
-		var newPosition = w.position + location
+		var newPosition = (w.ghost.global_transform.origin / 10).floor()
 		var wire = getWire.call_func(newPosition, w.normal)
 		fromPrototype[w] = wire
 	

@@ -162,9 +162,9 @@ func save_blueprint():
 		wire.unselect()
 	selection = {}
 
-func play_blueprint(position, _normal):
+func play_blueprint():
 	if blueprint:
-		blueprint.paste(position, funcref(self, "addWire"))
+		blueprint.paste(funcref(self, "addWire"))
 
 func suggest_blueprint(position, normal):
 	if blueprintViewport.is_a_parent_of(blueprint):

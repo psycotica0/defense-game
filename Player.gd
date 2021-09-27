@@ -415,7 +415,7 @@ func process_input(delta):
 			if Input.is_action_just_released("fire"):
 				var target = getWirePos()
 				if target:
-					level.play_blueprint(target[0], target[1])
+					level.play_blueprint()
 					level.end_suggestion()
 					currentMode = PlayerMode.NORMAL
 			
