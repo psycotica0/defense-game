@@ -141,7 +141,9 @@ func proposeConnection(otherWire):
 # This is the other half of proposeConnection
 # The outside tells one of use to connect to the other
 # Whereas this is the two halves talking to each other as part of that
-func connectionProposed(otherWire):
+# If xor is true, connection over existing connection means delete
+# If false, connection over existing connection means noop
+func connectionProposed(otherWire, xor = true):
 	var leg = getDirection(otherWire)
 	
 	# At some point I should fix this for real
@@ -157,8 +159,11 @@ func connectionProposed(otherWire):
 		proposedDeletions.remove(delIndex)
 		legs[leg] = LegState.COMMITTED
 	elif cnxIndex != -1: # Delete
-		proposedDeletions.push_back(otherWire)
-		legs[leg] = LegState.PROPOSED
+		if xor:
+			proposedDeletions.push_back(otherWire)
+			legs[leg] = LegState.PROPOSED
+		else:
+			pass
 	elif prpIndex != -1: # Undo Add
 		proposedConnections.remove(prpIndex)
 		legs[leg] = LegState.NOTHING

@@ -94,7 +94,7 @@ func paste(getWire):
 	for w in allWires:
 		var wire = fromPrototype[w]
 		for c in w.connections:
-			wire.connectionProposed(fromPrototype[c])
+			wire.connectionProposed(fromPrototype[c], false)
 	
 	for w in allWires:
 		fromPrototype[w].commitProposal()
