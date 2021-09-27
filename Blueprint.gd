@@ -77,9 +77,11 @@ func ofWires(wires):
 	for w in wires:
 		var proto = toPrototype[w]
 		for c in w.connections:
-			var other = toPrototype[c]
-			if other:
-				proto.connections.push_back(other)
+			# There may be connections from this wire to things outside the selection
+			if toPrototype.has(c):
+				var other = toPrototype[c]
+				if other:
+					proto.connections.push_back(other)
 
 func paste(getWire):
 	var fromPrototype = {}
