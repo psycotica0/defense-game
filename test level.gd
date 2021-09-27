@@ -179,6 +179,14 @@ func end_suggestion():
 		remove_child(blueprint)
 		blueprintViewport.add_child(blueprint)
 
+func rotate_blueprint_clockwise():
+	if blueprint:
+		blueprint.rotate_clockwise()
+
+func rotate_blueprint_counterclockwise():
+	if blueprint:
+		blueprint.rotate_counterclockwise()
+
 func clear_wire(pos, normal):
 	var wire = allWires.get([pos, normal])
 	if wire:

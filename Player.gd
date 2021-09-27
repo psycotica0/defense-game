@@ -422,6 +422,12 @@ func process_input(delta):
 			if Input.is_action_just_released("selection"):
 				currentMode = PlayerMode.NORMAL
 				level.end_suggestion()
+			
+			if Input.is_action_just_released("rotate_clockwise"):
+				level.rotate_blueprint_clockwise()
+			
+			if Input.is_action_just_released("rotate_counterclockwise"):
+				level.rotate_blueprint_counterclockwise()
 
 	if is_wiring:
 		var target = getWirePos()
@@ -870,32 +876,32 @@ func _input(event):
 	if is_dead:
 		return
 	
-	# Make sure the event is a mouse motion event and that our cursor is locked.
-	if event is InputEventMouseButton and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-		# We can ONLY access the scroll wheel in _input. Because of this,
-		# we have to process changing weapons with the scroll wheel here.
-		if event.button_index == BUTTON_WHEEL_UP or event.button_index == BUTTON_WHEEL_DOWN:
-			# Add/Remove MOUSE_SENSITIVITY_SCROLL_WHEEL based on which direction we are scrolling
-			if event.button_index == BUTTON_WHEEL_UP:
-				mouse_scroll_value += MOUSE_SENSITIVITY_SCROLL_WHEEL
-			elif event.button_index == BUTTON_WHEEL_DOWN:
-				mouse_scroll_value -= MOUSE_SENSITIVITY_SCROLL_WHEEL
-			
-			# Make sure we are using a valid number by clamping the value
-			mouse_scroll_value = clamp(mouse_scroll_value, 0, WEAPON_NUMBER_TO_NAME.size()-1)
-			
-			# Make sure we are not already changing weapons, or reloading.
-			if changing_weapon == false:
-				if reloading_weapon == false:
-					# Round mouse_scroll_view so we get a full number and convert it from a float to a int
-					var round_mouse_scroll_value = int(round(mouse_scroll_value))
-					# If we are not already using the weapon at that position, then change to it.
-					if WEAPON_NUMBER_TO_NAME[round_mouse_scroll_value] != current_weapon_name:
-						changing_weapon_name = WEAPON_NUMBER_TO_NAME[round_mouse_scroll_value]
-						changing_weapon = true
-						# Set mouse scroll value to the rounded value so the amount of time it takes to change weapons
-						# is consistent.
-						mouse_scroll_value = round_mouse_scroll_value
+#	# Make sure the event is a mouse motion event and that our cursor is locked.
+#	if event is InputEventMouseButton and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+#		# We can ONLY access the scroll wheel in _input. Because of this,
+#		# we have to process changing weapons with the scroll wheel here.
+#		if event.button_index == BUTTON_WHEEL_UP or event.button_index == BUTTON_WHEEL_DOWN:
+#			# Add/Remove MOUSE_SENSITIVITY_SCROLL_WHEEL based on which direction we are scrolling
+#			if event.button_index == BUTTON_WHEEL_UP:
+#				mouse_scroll_value += MOUSE_SENSITIVITY_SCROLL_WHEEL
+#			elif event.button_index == BUTTON_WHEEL_DOWN:
+#				mouse_scroll_value -= MOUSE_SENSITIVITY_SCROLL_WHEEL
+#
+#			# Make sure we are using a valid number by clamping the value
+#			mouse_scroll_value = clamp(mouse_scroll_value, 0, WEAPON_NUMBER_TO_NAME.size()-1)
+#
+#			# Make sure we are not already changing weapons, or reloading.
+#			if changing_weapon == false:
+#				if reloading_weapon == false:
+#					# Round mouse_scroll_view so we get a full number and convert it from a float to a int
+#					var round_mouse_scroll_value = int(round(mouse_scroll_value))
+#					# If we are not already using the weapon at that position, then change to it.
+#					if WEAPON_NUMBER_TO_NAME[round_mouse_scroll_value] != current_weapon_name:
+#						changing_weapon_name = WEAPON_NUMBER_TO_NAME[round_mouse_scroll_value]
+#						changing_weapon = true
+#						# Set mouse scroll value to the rounded value so the amount of time it takes to change weapons
+#						# is consistent.
+#						mouse_scroll_value = round_mouse_scroll_value
 	
 	# Make sure the event is a mouse motion event, and that the cursor is captured
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:

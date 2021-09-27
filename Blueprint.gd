@@ -105,3 +105,9 @@ func setPosition(pos, _normal):
 	# normal = norm
 	var tile_position = pos * 10 + OFFSET
 	translation = tile_position
+
+func rotate_clockwise():
+	rotate_y(-deg2rad(90))
+	
+func rotate_counterclockwise():
+	rotate_y(deg2rad(90))
