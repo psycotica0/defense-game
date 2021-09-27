@@ -31,8 +31,12 @@ class TileState:
 	
 	var position
 	
+	func inDeadZone():
+		# This is the starting area, which I don't want bad guys in
+		return position.x > -27 and position.x < -10 and position.z > -22 and position.z < -10
+
 	func canSpawn():
-		return beacons.empty() and shields.empty() and wires.empty() and players.empty() and enemies.empty()
+		return beacons.empty() and shields.empty() and wires.empty() and players.empty() and enemies.empty() and not inDeadZone()
 
 func _enter_tree():
 	Globals.currentLevel = self
