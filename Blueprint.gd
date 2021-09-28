@@ -87,7 +87,10 @@ func paste(getWire):
 	var fromPrototype = {}
 	for w in allWires:
 		var newPosition = (w.ghost.global_transform.origin / 10).floor()
-		var wire = getWire.call_func(newPosition, w.normal)
+		# We can't use the ghost's transform because the wire object rotates itself
+		# to align to the normal
+		var newNormal = to_global(w.normal) - to_global(Vector3.ZERO)
+		var wire = getWire.call_func(newPosition, newNormal)
 		fromPrototype[w] = wire
 	
 	# Connections
