@@ -3,7 +3,9 @@ class_name Blueprint
 
 var position
 
-const OFFSET = Vector3(0, 0, 0)
+# This counteracts the offset made by RotationOffset
+# And that's there so blueprints will rotate around the middle of their anchor tile
+const OFFSET = Vector3(5, 0, 5)
 
 class CircuitManager:
 	var circuit = Circuit.new()
@@ -59,16 +61,22 @@ func ofWires(wires):
 		centerOfMass += w.position
 	
 	centerOfMass /= wires.size()
-	centerOfMass = centerOfMass.snapped(Vector3(1,1,1))
+	centerOfMass = centerOfMass
+	
+	var mostCentral = wires[0].position
+	for w in wires:
+		if w.position.distance_to(centerOfMass) < mostCentral.distance_to(centerOfMass):
+			mostCentral = w.position
+	
 	for w in wires:
 		var proto = WirePrototype.new()
 		proto.fromWire(w)
-		proto.position -= centerOfMass
+		proto.position -= mostCentral
 		allWires.push_back(proto)
 		toPrototype[w] = proto
 		
 		var ghost = proto.buildGhost(w, circuitManager)
-		add_child(ghost)
+		$RotationOffset.add_child(ghost)
 		ghost.setPosition(proto.position, proto.normal)
 		ghost.select()
 		proto.setDependent(ghost)
