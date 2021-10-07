@@ -54,9 +54,9 @@ class WirePrototype:
 		
 		return ghost
 	
-	func setDependent(wire):
+	func setDependent(wire, direction = null):
 		if dependent:
-			wire.setDependent(dependent, dependent_direction)
+			wire.setDependent(dependent, direction)
 
 var allWires = []
 var ghosts = []
@@ -91,7 +91,7 @@ func ofWires(wires):
 		$RotationOffset.add_child(ghost)
 		ghost.setPosition(proto.position, proto.normal)
 		ghost.select()
-		proto.setDependent(ghost)
+		proto.setDependent(ghost, proto.dependent_direction)
 	
 	# Now turn connections into prototype connections
 	for w in wires:
@@ -123,7 +123,11 @@ func paste(getWire):
 		fromPrototype[w].commitProposal()
 	
 	for w in allWires:
-		w.setDependent(fromPrototype[w])
+		if w.dependent_direction:
+			var newDirection = to_global(w.dependent_direction) - to_global(Vector3.ZERO)
+			w.setDependent(fromPrototype[w], newDirection)
+		else:
+			w.setDependent(fromPrototype[w])
 
 func setPosition(pos, norm):
 	position = pos
