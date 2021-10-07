@@ -2,10 +2,18 @@ extends Spatial
 class_name Blueprint
 
 var position
+var normal
+
+# This is used to figure out which way to rotate when I'm mirroring
+# So if this is a floor pattern, I use the wall I just came off of to figure out
+# which way to rotate to the ceiling
+var lastAxis
+
+var rotated = 0
 
 # This counteracts the offset made by RotationOffset
 # And that's there so blueprints will rotate around the middle of their anchor tile
-const OFFSET = Vector3(5, 0, 5)
+const OFFSET = Vector3(5, 5, 5)
 
 class CircuitManager:
 	var circuit = Circuit.new()
@@ -64,9 +72,13 @@ func ofWires(wires):
 	centerOfMass = centerOfMass
 	
 	var mostCentral = wires[0].position
+	var anchorNormal = wires[0].normal
 	for w in wires:
 		if w.position.distance_to(centerOfMass) < mostCentral.distance_to(centerOfMass):
 			mostCentral = w.position
+			anchorNormal = w.normal
+	
+	normal = anchorNormal
 	
 	for w in wires:
 		var proto = WirePrototype.new()
@@ -113,14 +125,24 @@ func paste(getWire):
 	for w in allWires:
 		w.setDependent(fromPrototype[w])
 
-func setPosition(pos, _normal):
+func setPosition(pos, norm):
 	position = pos
-	# normal = norm
+	var rotation_axis = normal.cross(norm)
+	rotation = Vector3.ZERO
+	
+	if rotation_axis != Vector3.ZERO:
+		rotate_object_local(rotation_axis, deg2rad(90))
+		lastAxis = rotation_axis
+	elif norm != normal: # Mirror Opposite (Floor to Ceiling)
+		rotate_object_local(lastAxis, deg2rad(180))
+	
+	rotate_object_local(normal, rotated)
+		
 	var tile_position = pos * 10 + OFFSET
 	translation = tile_position
 
 func rotate_clockwise():
-	rotate_y(-deg2rad(90))
+	rotated -= deg2rad(90)
 	
 func rotate_counterclockwise():
-	rotate_y(deg2rad(90))
+	rotated += deg2rad(90)
