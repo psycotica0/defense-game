@@ -1,11 +1,11 @@
-extends Spatial
+extends StaticBody
 
 const SCAN_RPM = 60.0 / 5.0
 
 onready var gunHolder = $"Gun Holder"
 onready var happyLaser = $"Gun Holder/Barrel/Laser"
 onready var sadLaser = $"Gun Holder/Barrel/SadLaser"
-onready var vision = $"Gun Holder/Vision"
+onready var vision = $"Vision"
 onready var heat = $Heat
 onready var laser = sadLaser
 
@@ -47,7 +47,8 @@ func changeState(newState):
 	currentState = newState
 	match newState:
 		State.OFF, State.VENTING:
-			laser.visible = false
+			sadLaser.visible = false
+			happyLaser.visible = false
 			currentTarget = null
 			gunHolder.rotation.x = deg2rad(-20)
 			updateDemand(BASE_DEMAND)
@@ -135,6 +136,9 @@ func updateDemand(newDemand):
 func processScanning(delta):
 	# Continue to scan
 	gunHolder.rotate_y((SCAN_RPM / 60.0) * TAU * delta)
+	var curRot = vision.rotation
+	curRot.y = PI + gunHolder.rotation.y
+	vision.rotation = curRot
 
 func _on_Heat_state_change(state):
 	if state == Heat.State.VENTING:
@@ -159,3 +163,9 @@ func _on_Vision_vision_entered(body):
 func _on_Vision_vision_exited(body):
 	if body == currentTarget:
 		changeState(State.SCANNING)
+
+
+func _on_Health_dead():
+	if source:
+		# Tell our wire to get rid of us
+		source.removeDependent()
