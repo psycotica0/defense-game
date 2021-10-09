@@ -63,6 +63,9 @@ var ghosts = []
 var circuitManager = CircuitManager.new()
 
 func ofWires(wires):
+	if wires.empty():
+		return
+	
 	var centerOfMass = Vector3.ZERO
 	var toPrototype = {}
 	for w in wires:
@@ -104,6 +107,9 @@ func ofWires(wires):
 					proto.connections.push_back(other)
 
 func paste(getWire):
+	if allWires.empty():
+		return
+	
 	var fromPrototype = {}
 	for w in allWires:
 		var newPosition = (w.ghost.global_transform.origin / 10).floor()

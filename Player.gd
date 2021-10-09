@@ -485,7 +485,9 @@ func process_input(delta):
 	if Input.is_action_just_pressed("save_blueprint"):
 		level.save_blueprint()
 	elif Input.is_action_just_pressed("play_blueprint"):
-		currentMode = PlayerMode.BUILDING
+		# Well... this is a bit leaky...
+		if level.blueprint and not level.blueprint.allWires.empty():
+			currentMode = PlayerMode.BUILDING
 	
 	
 	# ----------------------------------
