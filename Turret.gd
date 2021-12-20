@@ -24,9 +24,13 @@ var currentState = State.OFF
 
 var heatRate = 30
 
+var rng = RandomNumberGenerator.new()
+
 enum State {OFF, SCANNING, FIRING, VENTING}
 
 func _ready():
+	rng.randomize()
+	$RotationTween.targetValue = rng.randi_range(0, 360)
 	changeState(State.OFF)
 
 func changeCircuit(newCircuit):
@@ -169,3 +173,8 @@ func _on_Health_dead():
 	if source:
 		# Tell our wire to get rid of us
 		source.removeDependent()
+
+
+func _on_RotationTween_destination_reached():
+	$RotationTween.targetValue = rng.randi_range(0, 360)
+	$RotationTween.active = true

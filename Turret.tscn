@@ -1,9 +1,10 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://Turret.gd" type="Script" id=1]
 [ext_resource path="res://Heat.gd" type="Script" id=2]
 [ext_resource path="res://Vision.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Health.gd" type="Script" id=4]
+[ext_resource path="res://MomentumTween.gd" type="Script" id=5]
 
 [sub_resource type="CapsuleMesh" id=1]
 radius = 1.5
@@ -92,7 +93,13 @@ max_health = 60.0
 [node name="CollisionShape" type="CollisionShape" parent="."]
 transform = Transform( 1, 0, 0, 0, -1.62921e-07, -1, 0, 1, -1.62921e-07, 0, 0, 0 )
 shape = SubResource( 7 )
+
+[node name="RotationTween" type="Node" parent="."]
+script = ExtResource( 5 )
+target = NodePath("../Gun Holder")
+property = "rotation_degrees:y"
 [connection signal="vision_entered" from="Vision" to="." method="_on_Vision_vision_entered"]
 [connection signal="vision_exited" from="Vision" to="." method="_on_Vision_vision_exited"]
 [connection signal="state_change" from="Heat" to="." method="_on_Heat_state_change"]
 [connection signal="dead" from="Health" to="." method="_on_Health_dead"]
+[connection signal="destination_reached" from="RotationTween" to="." method="_on_RotationTween_destination_reached"]
