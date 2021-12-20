@@ -1,17 +1,14 @@
 [gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Vision.gd" type="Script" id=1]
+[ext_resource path="res://VisionDebugMaterial.tres" type="Material" id=2]
 
-[sub_resource type="SpatialMaterial" id=1]
-flags_transparent = true
-albedo_color = Color( 1, 0, 1, 0.196078 )
-
-[sub_resource type="PrismMesh" id=2]
-material = SubResource( 1 )
+[sub_resource type="PrismMesh" id=1]
+material = ExtResource( 2 )
 size = Vector3( 1, 1, 1 )
 
-[sub_resource type="BoxShape" id=3]
-extents = Vector3( 3.52654, 10, 10 )
+[sub_resource type="BoxShape" id=2]
+extents = Vector3( 10.5031, 4, 7.5 )
 
 [node name="Vision" type="Spatial"]
 script = ExtResource( 1 )
@@ -21,7 +18,7 @@ length = 15.0
 
 [node name="DebugLook" type="MeshInstance" parent="."]
 transform = Transform( 21.0062, 0, 0, 0, -6.55671e-07, 8, 0, -15, -3.49691e-07, 0, 0, 7.5 )
-mesh = SubResource( 2 )
+mesh = SubResource( 1 )
 material/0 = null
 
 [node name="Area" type="Area" parent="."]
@@ -29,6 +26,6 @@ collision_mask = 0
 
 [node name="CollisionShape" type="CollisionShape" parent="Area"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 7.5 )
-shape = SubResource( 3 )
+shape = SubResource( 2 )
 [connection signal="body_entered" from="Area" to="." method="_on_Area_body_entered"]
 [connection signal="body_exited" from="Area" to="." method="_on_Area_body_exited"]

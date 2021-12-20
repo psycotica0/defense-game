@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://VisionDebugMaterial.tres" type="Material" id=1]
+[ext_resource path="res://Omnivision.gd" type="Script" id=2]
+
+[sub_resource type="SphereMesh" id=1]
+material = ExtResource( 1 )
+radius = 15.0
+height = 15.0
+is_hemisphere = true
+
+[sub_resource type="SphereShape" id=2]
+radius = 15.0
+
+[node name="Omnivision" type="Spatial"]
+script = ExtResource( 2 )
+radius = 10.0
+
+[node name="DebugLook" type="MeshInstance" parent="."]
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="Area" type="Area" parent="."]
+
+[node name="CollisionShape" type="CollisionShape" parent="Area"]
+shape = SubResource( 2 )
+[connection signal="body_entered" from="Area" to="." method="_on_Area_body_entered"]
+[connection signal="body_exited" from="Area" to="." method="_on_Area_body_exited"]

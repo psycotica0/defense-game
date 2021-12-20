@@ -75,7 +75,7 @@ func _on_Vision_vision_entered(_body):
 	changeState(State.DETECTING)
 
 func _on_Vision_vision_exited(_body):
-	if $Vision.visibleBodies().empty():
+	if $Omnivision.visibleBodies().empty():
 		changeState(State.IDLE)
 	else:
 		changeState(State.DETECTING)
